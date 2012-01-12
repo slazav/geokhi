@@ -14,7 +14,7 @@ b=6
 f(x) = -x + b
 
 print a2*180/pi
-plot [-3:50] [:3]\
- "test2.txt" using 1:4 with lines,\
- -x
+plot [-6:5] [-1:]\
+ "test3.txt" using 1:4 with lines,\
+ 0, x+1.03, -x-0.5
 pause -1

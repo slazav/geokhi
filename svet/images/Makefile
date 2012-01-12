@@ -1,4 +1,4 @@
-pics=p1
+pics=p1 test1 test2 test3 test4
 
 #all: ${pics:=.png} ${pics:=.tex} ${pics:=.eps}
 all: ${pics:=.tex} ${pics:=.eps}
