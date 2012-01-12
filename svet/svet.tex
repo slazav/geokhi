@@ -1,0 +1,103 @@
+\documentclass[12pt]{article}
+
+\usepackage[
+  a4paper, mag=1000, includefoot,
+  left=2cm, right=2cm, top=2cm, bottom=2cm, headsep=1cm, footskip=1cm
+]{geometry}
+\usepackage[T2A]{fontenc}
+\usepackage[koi8-r]{inputenc}
+\usepackage[english,russian]{babel}
+
+\usepackage{amssymb}
+\usepackage{euscript}
+\usepackage{color}
+\usepackage{graphicx}
+% Путь к файлам с иллюстрациями
+\graphicspath{{images/}}
+
+\newcommand{\image}[3]{
+\begin{figure}[#1]
+\begin{center}
+\input{images/#2.tex}
+\caption{\small#3}
+\label{image:#2}
+\end{center}
+\end{figure}
+}
+
+\begin{document}
+
+Рассмотрим световую волну с волновым вектором $\bf k$, распространяющуюся
+в среде с ненулевым градиентом коэффициента преломления $\nabla n$ (рис.~1).
+Рассмотрим некоторый вектор $\bf l$, лежащий в плоскости волнового фронта.
+Коэффициент преломления на концах вектора $\bf l$  различается на величину
+$\bf l\cdot\nabla n$.
+
+Рассмотрим смещение волнового фронта за малое время $dt$. Фазовая скорость
+волны равна $c/n$. Возникающая разность хода 
+
+$$
+\Delta = \frac{c\ dt}{n} - \frac{c\ dt}{n+{\bf l}\cdot\nabla n} \approx
+\frac{{\bf l} \cdot\nabla n}{n^2}\ c\ dt.
+$$
+
+Угол $d\alpha$, на который повернулся фронт волны, равен отношению разности хода к
+величине $l$, расстояние, которое прошел фронт, $ds=c\ dt/n$. То есть,
+$$
+\frac{d\alpha}{ds} = \frac{{\bf l} \cdot\nabla n}{l\ n}.
+$$
+
+\image{!ht}{p1}{}
+
+Теперь перейдем к координатам. Пусть тректория луча $y=f(x)$. Тогда
+$f^\prime = \tan\alpha$, а
+
+$$
+f^{\prime\prime} = \frac{d(\tan\alpha)}{dx} =
+\frac{1}{\cos^2\alpha}\ \frac{d\alpha}{dx}=
+\frac{1}{\cos^2\alpha}\ \frac{d\alpha}{ds\ \cos\alpha} =
+$$
+$$
+=\frac{{\bf l} \cdot\nabla n}{l\ n \cos^3\alpha}=
+\frac{- l \sin\alpha\ n^\prime_x + l \cos\alpha\ n^\prime_y}{l\ n \cos^3\alpha} =
+\frac{n^\prime_y - \tan\alpha\ n^\prime_x}{n\ \cos^2\alpha} =
+\frac{1}{n} (n^\prime_y - \tan\alpha\ n^\prime_x)(1+\tan^2\alpha).
+$$
+
+Получаем уравнение
+$$
+f^{\prime\prime}\ n = (n^\prime_y -  f^\prime\ n^\prime_x) (1+f^{\prime 2}).
+$$
+
+Будем его решать с начальными условиями $f_{x=0} = f_0$, $f^\prime_{x=0} = 0$.
+Используем простейшие разностные схемы:
+
+$$
+f^{\prime\prime} = \frac{f(x-h)+f(x+h)-2f(x)}{h^2}\quad
+f^\prime = \frac{f(x)-f(x-h)}{h},
+$$
+где $h$~--- шаг сетки. Подставляя их в уравнение, получаем:
+
+$$
+\frac{2f(x)-f(x-h)-f(x+h)}{h^2}\ n + \frac{f(x+h)-f(x-h)}{2h}\ n^\prime_x = n^\prime_y.
+$$
+
+$$
+[2f(x)-f(x-h)-f(x+h)]\ 2n + [f(x+h)-f(x-h)]\ hn^\prime_x = 2h^2 n^\prime_y.
+$$
+
+$$
+f(x+h) = \frac{f(x-h)[hn^\prime_x+2n] - 4f(x)n + 2h^2 n^\prime_y}{hn^\prime_x - 2n}.
+$$
+
+Таким образом, зная коэффициент преломления, его производные, а также значения f в
+двух предыдущих узлах сетки, можно найти значение f в следующем узле сетки.
+
+
+
+
+
+
+
+\end{document}
+
