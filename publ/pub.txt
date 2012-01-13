@@ -1,0 +1,68 @@
+В. В. Дмитриев, В. В. Завьялов, Д. Е. Змеев, И. В. Косарев, Н. Малдерс.
+Нелинейный ЯМР  в сверхтекучей В-фазе 3He в аэрогеле.
+Письма в ЖЭТФ, 76:371--376, 2002.
+
+V. V. Dmitriev, I. V. Kosarev, N. Mulders, V. V. Zavjalov, D. E. Zmeev.
+Homogeneous spin precession in superfluid 3He confined to aerogel.
+Physica B: Condensed Matter, vol.329-333, Part 1, Pages 324-326, 2003.
+Proceedings of the 23rd International Conference on Low Temperature Physics,
+LT23, held in Hiroshima, Japan, 20-27 August 2002,
+
+V. V. Dmitriev, I. V. Kosarev, N. Mulders, V. V. Zavjalov, D. E. Zmeev.
+Measurements of longitudinal and transverse magnetic relaxation in superfluid 3He confined to aerogel.
+Physica B: Condensed Matter, vol.329-333, Part 1, Pages 322-323,, 2003.
+Proceedings of the 23rd International Conference on Low Temperatur Physics,
+LT23, held in Hiroshima, Japan, 20-27 August 2002,
+
+V. V. Dmitriev, I. V. Kosarev, N. Mulders, V. V. Zavjalov, D. E. Zmeev.
+Pulsed NMR experiments in superfluid 3He confined to aerogel.
+Physica B: Condensed Matter, vol.329-333, Part 1, Pages 296-298, 2003.
+Proceedings of the 23rd International Conference on Low Temperature Physics,
+LT23, held in Hiroshima, Japan, 20-27 August 2002,
+
+Vladimir V Dmitriev, Ivan V Kosarev, Norbert Mulders, Vladislav V Zavjalov, Dmitry Ye Zmeev.
+Experiments on A-like to B phase transitions of 3He confined to aerogel.
+Physica B: Condensed Matter, 329-333, Part 1(0):320 -- 321, 2003.
+Proceedings of the 23rd International Conference on Low Temperature Physics,
+LT23, held in Hiroshima, Japan, 20-27 August 2002,
+
+А.Н.Выставкин, В.В.Дмитриев, В.В.Завьялов, А.Г.Коваленко, С.А.Ковтонюк, А.А.Чеботарев
+Исследование сверхпроводникового фазового перехода в двухслойной структуре молибден-медь с эффектом близости
+Радиотехника и электроника, т.48, N7, 2003.
+
+В. В. Дмитриев, В. В. Завьялов, Д. Е. Змеев, И. В. Косарев, Н. Малдерс.
+Свeрхтекучие фазы 3Не в аэрогеле.
+Успехи физических наук, 173(4):452--456, 2003.
+
+В. В. Дмитриев, В. В. Завьялов, Д. Е. Змеев, Н. Малдерс.
+Измерения леггеттовской частоты в 3He-B в аэрогеле.
+Письма в ЖЭТФ, 79:612--617, 2004.
+
+V. V. Dmitriev, V. V. Zavjalov, D. Ye. Zmeev, L. V. Levitin.
+Purification of 3He from a 4He Impurity Using Adsorption.
+Instruments and Experimental Techniques, 47:567--569, 2004.
+
+V.V. Dmitriev, L.V. Levitin, V.V. Zavjalov, D.Ye. Zmeev.
+Separation of 3He from 3He-4He Mixture by means of Adsorption.
+Journal of Low Temperature Physics, 138:877--880, 2005.
+
+V.V. Dmitriev, V.V. Zavjalov, D.Ye. Zmeev.
+Spatially homogeneous oscillations of homogeneously precessing domain in 3He-B.
+Journal of Low Temperature Physics, 138:765--770, 2005.
+
+V. V. Dmitriev, N. Mulders, V. V. Zavjalov, D. E. Zmeev.
+CW NMR Measurements of the Leggett Frequency in 3He-B in Aerogel.
+AIP Conference Proceedings, 850:229--230, 2006.
+
+V. V. Dmitriev, N. Mulders, V. V. Zavjalov, D. E. Zmeev.
+NMR Studies of Texture in the B-like  Phase of 3He in Aerogel.
+AIP Conference Proceedings, 850:225--228, 2006.
+
+V. Dmitriev, D. Krasnikhin, N. Mulders, V. Zavjalov, D. Zmeev.
+Transverse and longitudinal nuclear magnetic resonance in superfluid 3He in anisotropic aerogel.
+JETP Letters, 86:594--599, 2008.
+
+Завьялов В.В.
+Измерение леггеттовской частоты 3He-B в аэрогеле
+Автореферат диссертации на соискание ученой степени к.ф.-м.н.
+Москва, 2011
