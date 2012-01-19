@@ -1,4 +1,4 @@
-all: svet.pdf
+all: svet.pdf pub.pdf
 
 %.pdf: %.ps
 	ps2pdf $<
