@@ -5,7 +5,7 @@
 
 C       read cell dimensions
         real*8 L, D, Dw, Lw, Dd, Ld
-        DATA L/1.0/, D/1.0/, Lw/0.5/, Dw/0.5/, Dd/0.1/, Ld/0.1/
+        DATA L/1.0/, D/1.0/, Lw/0.3/, Dw/0.5/, Dd/0.02/, Ld/0.01/
         real*8 CFG_VAL
         character*64 CFG_KEY
         integer i
