@@ -53,6 +53,8 @@ c ... AFT2D library function
       Integer   aft2dfront
       EXTERNAL  aft2dfront
 
+      EXTERNAL  mkcell
+
       Integer  nv, nvfix, labelV(nvmax), fixedV(1)
       Integer  nb, nbfix, labelB(nbmax), fixedB(1)
       integer  nt, ntfix, labelT(ntmax), fixedT(1)
@@ -111,12 +113,9 @@ c number of adaptive loops
       nLOOPs = 5
 
 C Read input file that contains coordinates of boundary points
-      Open(1,file='./cell.txt')
-         Read(1,*) Nbr
-         Do i = 1, Nbr
-            Read(1,*) (vbr(j,i),j=1,2)
-         End do
-      Close(1)
+      call mkcell(Nbr, vbr, labelB)
+
+      Write(*,*) Nbr
 
 C Generate a mesh  starting  from boundary mesh
       ierr=aft2dfront(
@@ -127,8 +126,11 @@ C Generate a mesh  starting  from boundary mesh
       If (ierr.ne.0) stop ' error in function aft2dfront'
       Write(*,5000) Nbr, nt, nv
 
-      labelb(2)=2
-      labelb(6)=3
+        labelB(3) = 2
+        labelB(8) = 3
+
+C      labelb(2)=2
+C      labelb(6)=3
 
 
 c begin adaptive iterative loop
@@ -143,20 +145,20 @@ c mark the Dirichlet points with the maximal edge color
          Call markDIR(nv, vrt, labelV, nb, bnd, labelB, 
      &                Dbc, dDATAFEM, iDATAFEM, iSYS)
 
-C      write (*,*) 'VRT:'
-C      Do i=1, nv
-C        write (*,*) vrt(i,1), vrt(i,2), labelV(i)
-C      End do
+      write (*,*) 'VRT:'
+      Do i=1, nv
+        write (*,*) vrt(1,i), vrt(2,i), labelV(i)
+      End do
 
       write (*,*) 'BRD:'
       Do i=1, nb
-        write (*,*) bnd(i,1), bnd(i,2), labelB(i)
+        write (*,*) bnd(1,i), bnd(2,i), labelB(i)
       End do
 
-C      write (*,*) 'TRI:'
-C      Do i=1, nt
-C        write (*,*) tri(i,1), tri(i,2), tri(i,3), labelT(i)
-C      End do
+      write (*,*) 'TRI:'
+      Do i=1, nt
+        write (*,*) tri(1,i), tri(2,i), tri(3,i), labelT(i)
+      End do
 
 
 c === general sparse matrix in a 0-based CSC format used in UMFPACK

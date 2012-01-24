@@ -112,10 +112,10 @@ C ======================================================================
          eBC(1,1) = 0D0
       Else If (label.EQ.2) Then
          Dbc = BC_DIRICHLET
-         eBC(1,1) = 1D0
+         eBC(1,1) = 0D0
       Else If (label.EQ.3) Then
          Dbc = BC_DIRICHLET
-         eBC(1,1) = 2D0
+         eBC(1,1) = 1D0
       Else
          Write(*,*) 'Dbc: wrong label=', label
          Stop

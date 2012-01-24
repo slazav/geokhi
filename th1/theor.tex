@@ -1,0 +1,75 @@
+\documentclass[12pt]{article}
+
+\usepackage[
+  a4paper, mag=1000, includefoot,
+  left=2cm, right=2cm, top=2cm, bottom=2cm, headsep=1cm, footskip=1cm
+]{geometry}
+\usepackage[T2A]{fontenc}
+\usepackage[koi8-r]{inputenc}
+\usepackage[english,russian]{babel}
+
+\usepackage{amssymb}
+\usepackage{euscript}
+\usepackage{color}
+\usepackage{graphicx}
+% Путь к файлам с иллюстрациями
+\graphicspath{{images/}}
+
+\newcommand{\image}[3]{
+\begin{figure}[#1]
+\begin{center}
+\input{images/#2.tex}
+\caption{\small#3}
+\label{image:#2}
+\end{center}
+\end{figure}
+}
+
+\begin{document}
+
+\section*{Геометрия экспериментальной ячейки}
+
+Геометрия экспериментальной ячейки, для которой производится расчет,
+показана на рис.~\ref{image:cell}.
+
+\image{!ht}{cell}{}
+
+\section*{Распределение электрического потенциала}
+
+Для плотности тока $j$, удельной электропроводности $\sigma$ и
+электрического потенциала $U$ во всем объеме ячейки
+выполняются следующие уравнения (закон Ома и уравнение непрерывности):
+
+\begin{eqnarray}
+j&=&\sigma\nabla U\\
+\mbox{div}\ j &=& 0.
+\end{eqnarray}
+
+Подставляя первое уравнение во второе, получаем уравнение:
+
+\begin{equation}
+\Delta U = 0.
+\end{equation}
+
+Граничные условия~--- известные потенциалы $U_1$ и $U_2$ на электродах,
+отсутствие тока перпендикулярного стенке на других границах:
+
+\begin{eqnarray}
+U&=&U_1 \qquad \mbox{на электроде 1}\\
+U&=&U_2 \qquad \mbox{на электроде 2}\\
+\partial U/\partial n &=& 0 \qquad \mbox{на остальной границе}.
+\end{eqnarray}
+
+В цилиндрических координатах $z$, $r$ и $\varphi$ оператор Лапласа записывается
+так:
+\begin{equation}
+\Delta U= \frac {1}{r}\ \frac{\partial}{\partial r}\ \left(
+r \frac{\partial U}{\partial r} \right) +
+\frac{\partial^2 U}{\partial z^2} +
+\frac{1}{r^2}\ \frac{\partial^2 U}{\partial \varphi^2}.
+\end{equation}
+
+
+
+\end{document}
+

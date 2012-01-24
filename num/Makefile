@@ -9,7 +9,7 @@ LIBS	= -L$(ANILIB) $(LIBAFT) $(LIBFEM) $(LIBLU) $(LIBLMR) $(LIBMBA) \
 ############################################################
 all: main
 
-OBJ  =  main.o forlibfem.o 
+OBJ  =  main.o forlibfem.o mkcell.o
 
 
 ############################################################
@@ -19,9 +19,9 @@ main: $(OBJ)
 
 
 ############################################################
-main.o      : main.f
-forlibaft.o : forlibaft.f
-forlibfem.o : forlibfem.f
+#main.o      : main.f
+#forlibaft.o : forlibaft.f
+#forlibfem.o : forlibfem.f
 
 
 ############################################################
