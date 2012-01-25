@@ -1,4 +1,4 @@
-pics=cell
+pics=cell cell_q
 
 #all: ${pics:=.png} ${pics:=.tex} ${pics:=.eps}
 all: ${pics:=.tex} ${pics:=.eps}

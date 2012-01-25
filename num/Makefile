@@ -2,26 +2,22 @@
 ANIHOME = /home/sla/ani2D
 include $(ANIHOME)/src/Rules.make
 
-LIBS	= -L$(ANILIB) $(LIBAFT) $(LIBFEM) $(LIBLU) $(LIBLMR) $(LIBMBA) \
+LIBS	= -L $(ANILIB) $(LIBAFT) $(LIBFEM) $(LIBLU) $(LIBLMR) $(LIBMBA) \
 	              $(LIBVIEW) $(LIBLAPACK) $(LIBBLAS) -lm 
 
 
 ############################################################
 all: main
 
-OBJ  =  main.o forlibfem.o mkcell.o
+OBJ  =  main.o forlibfem.o create_mesh.o read_cfg.o
 
 
 ############################################################
 main: $(OBJ) 
-	@echo '$(FLINKER) -o $@' 
-	@$(FLINKER) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
-
+	$(FLINKER) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 
 ############################################################
-#main.o      : main.f
-#forlibaft.o : forlibaft.f
-#forlibfem.o : forlibfem.f
+$(OBJ): th.fh
 
 
 ############################################################

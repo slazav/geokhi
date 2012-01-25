@@ -1,68 +1,8 @@
 c ======================================================================
-      Program Stokes
-c ======================================================================
-c The adaptive solution for the following bvp:
-c
-c  -div grad u  + grad p = 0   in Omega
-c        div u           = 0   in Omega
-c
-c                      u = u_0 on dOmega_1
-c                      u = 0   on dOmega_2
-c                  du/dn = 0   on dOmega_3
-c
-c where Omega is a domain with a circle hole,  dOmega_1 is the side 
-c at x=-2, dOmega_3 is the side at x=2, and dOmega_2 is the rest of 
-c the boundary. The non-homogeneous boundary condition is 
-c
-c    u_0 = { 1-4y^2), 0 }.
-c
-c We use the P2 finite elements for the velocity u and P1 finite elements 
-c for the pressure p, which are known to be stable. The discretization 
-c method results in a symmetric indefinite matrix.
-c
+      Program Th
 c ======================================================================
       implicit none
-
-c nvmax - maximum number of mesh nodes
-c ntmax - maximum number of mesh triangles
-c nbmax - maximum number of boundary edges
-c namax - maximum number of non-zero matrix entries
-      Integer   nvmax,ntmax,nbmax,nfmax,namax
-      parameter(nvmax = 50 000, ntmax = 2*nvmax, nbmax = 5 000)
-      parameter(nfmax = 200 000, namax = 2 000 000)
-
-c work memory
-      Integer   MaxWr, MaxWi
-      Parameter(MaxWr = 4 000 000, MaxWi = 6 000 000)
-
-      Integer  iW(MaxWi)
-      Real*8   rW(MaxWr)
-      Real     ANI_CrvFunction
-
-c ======================================================================
-c Mesh definition
-c ======================================================================
-
-c mesh generator data specifying domain via in the segment format
-      double precision vbr(2,nbmax)
-      integer          Nbr
-
-      double precision vrt(2,nvmax)
-      integer          tri(3,ntmax), bnd(2,nbmax)
-c ... AFT2D library function
-      Integer   aft2dfront
-      EXTERNAL  aft2dfront
-
-      EXTERNAL  mkcell
-
-      Integer  nv, nvfix, labelV(nvmax), fixedV(1)
-      Integer  nb, nbfix, labelB(nbmax), fixedB(1)
-      integer  nt, ntfix, labelT(ntmax), fixedT(1)
-      Integer  nc, labelC(nbmax)
-      Real*8   crv(2,nbmax)
-
-      DATA     nvfix/0/, fixedV/0/,  nbfix/0/, ntfix/0/, nc/0/
-
+      include 'th.fh'
 
 c ======================================================================
 c for library aniFEM
@@ -116,34 +56,8 @@ c number of adaptive loops
       nLOOPs = 5
 
 C Read input file that contains coordinates of boundary points
-      call mkcell(Nbr, vbr, labelB)
-
-      Write(*,*) Nbr
-
-C Generate a mesh  starting  from boundary mesh
-      ierr=aft2dfront(
-     &           0, dummy, Nbr, vbr,   ! segment data
-     &           nv, vrt,              ! mesh data on output
-     &           nt, tri, labelT,
-     &           nb, bnd, labelB)
-      If (ierr.ne.0) stop ' error in function aft2dfront'
-      Write(*,5000) Nbr, nt, nv
-
-        labelB(3) = 2
-        labelB(8) = 3
-
-
-C Refine mesh
-         ipIRE = 1
-         ipWork = ipIRE + 3 * nt
-         MaxWiWork = MaxWi - 3 * nt
-
-         Call uniformRefinement(
-     &        nv, nvmax, nb, nbmax, nt, ntmax,
-     &        vrt, bnd, labelB, tri, labelT,
-     &        ANI_CrvFunction, crv, labelC, iW(ipIRE),
-     &        rW, 1, iW(ipWork), MaxWiWork)
-
+      call read_cfg
+      call create_mesh
 
 c begin adaptive iterative loop
       Do iLoop = 1, nLOOPs
