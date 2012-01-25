@@ -4,9 +4,9 @@ C ====== make initial mesh from cell dimensions
         Integer   aft2dfront
         EXTERNAL  aft2dfront
         double precision vbr(2,nbmax)
-        integer nbr
+        integer nbr, dummy
 
-        integer  ipIRE,ipWork, MaxWiWork
+        integer  ipIRE,ipWork, MaxWiWork, iERR
         DATA nvfix/0/, fixedV/0/,  nbfix/0/, ntfix/0/, nc/0/
 
         Write (*,*) 'Creating mesh.'
@@ -47,66 +47,44 @@ C ====== make initial mesh from cell dimensions
 
         nbr = 9
 
-
 C Generate a mesh
-        ierr=aft2dfront(
+        iERR=aft2dfront(
      &           0, dummy, nbr, vbr,   ! segment data
      &           nv, vrt,              ! mesh data on output
      &           nt, tri, labelT,
      &           nb, bnd, labelB)
-        If (ierr.ne.0) stop ' error in function aft2dfront'
+        If (iERR.ne.0) stop ' error in function aft2dfront'
 
-        Write(*,5101) Nbr, nt, nv
-
-        Write(*,*) '   Writing mesh into mesh0.ps'
+        Write(*,5101) Nbr
+        Write(*,5102) nt, nv
+        Write(*,*) '   Writing initial mesh into mesh0.ps'
         Call graph_demo(nv,vrt,nt,tri, 'mesh0.ps', '')
 
         labelB(3) = 2
         labelB(8) = 3
 
 C Refine mesh
-         ipIRE = 1
-         ipWork = ipIRE + 3 * nt
-         MaxWiWork = MaxWi - 3 * nt
-
 
          call refine_mesh
 
-c         Call uniformRefinement(
-c     &        nv, nvmax, nb, nbmax, nt, ntmax,
-c     &        vrt, bnd, labelB, tri, labelT,
-c     &        ANI_CrvFunction, crv, labelC, iW(ipIRE),
-c     &        rW, 1, iW(ipWork), MaxWiWork)
-
-c        Write(*,5102) nt, nv
-c        Write(*,*) '   Writing refined mesh into mesh1.ps'
-c        Call graph_demo(nv,vrt,nt,tri, 'mesh1.ps', '')
-
-c        Call Delaunay(
-c     &        nv, nt, vrt,  tri, MaxWi, iW)
-c        Call smoothingMesh(
-c     &        nv, nt, vrt,  tri, MaxWi, iW)
-
-
         Write(*,5102) nt, nv
-        Write(*,*) '   Writing smoothed mesh into mesh2.ps'
-        Call graph_demo(nv,vrt,nt,tri, 'mesh2.ps', '')
+        Write(*,*) '   Writing refined mesh into mesh1.ps'
+        Call graph_demo(nv,vrt,nt,tri, 'mesh1.ps', '')
 
         return
 
 c =======
  5101   format(
-     &  '  The initial front has', I4, ' edges.',/,
-     &  '  The initial mesh has', I4, ' triangles and',
-     &  I4, ' vertices.')
+     &  '  The initial front has', I4, ' edges.')
  5102   format(
-     &  '  The refined mesh has', I4, ' triangles and',
+     &  '  The mesh has', I4, ' triangles and',
      &  I4, ' vertices.')
 
 
       end
 
 
+C =====================================================================
       subroutine refine_mesh()
         include 'th.fh'
         Integer  nEStar, iERR
@@ -120,28 +98,31 @@ c === generate adaptive mesh
         control(2) = 50000   !  MaxQItr
         control(3) = 1       !  status
         control(4) = 1       !  flagAuto
-        control(5) = 1       !  iPrint:   average level of output information
+        control(5) = 0       !  iPrint:   average level of output information
         control(6) = 0       !  iErrMesgt: only critical termination allowed
 
-        Quality = 0.8D0      !  request shape-regular triangles in metric
-        nEStar  = 200       !  desired number of triangles
+        Quality = 0.99D0      !  request shape-regular triangles in metric
+        nEStar  = 3000       !  desired number of triangles
 
       Call mbaAnalytic(
 c group (M)
      &      nv, nvfix, nvmax, vrt, labelV, fixedV,
      &      nb, nbfix, nbmax, bnd, labelB, fixedB,
-     &      nc,               crv, labelC, CrvFunction,
+     &      nc,               crv, labelC, ANI_CrvFunction,
      &      nt, ntfix, ntmax, tri, labelT, fixedT,
 c group (CONTROL)
      &      nEStar, Quality, control, MetricFunction,
 c group (W)
      &      MaxWr, MaxWi, rW, iW, iERR)
 
-      end
- 
+c        Call smoothingMesh(
+c     &        nv, nt, vrt,  tri, MaxWi, iW)
+        Call Delaunay(
+     &        nv, nt, vrt,  tri, MaxWi, iW)
 
+      end
 C =====================================================================
-      Integer Function MetricFunction(x, y, Metric)
+      Integer Function MetricFunction(x, y, M)
 C =====================================================================
 C  This routine creates a metric at the given point (x,y). The
 C  metric is a 2x2 positive definite symmetric tensor:
@@ -153,12 +134,64 @@ C  Only the upper triangular part of 2x2 array Metric may be defined.
 C
 C  In this example, the metric is constant and isotropic.
 C =====================================================================
-      Real*8  x, y, Metric(2, 2)
-c      Metric(1,1) = (D-x)*(L/2.0-y)
-      Metric(1,1) = (x*y)**2
-      Metric(1,2) = 0
-      Metric(2,1) = 0
-      Metric(2,2) = Metric(1,1)
+      include 'th.fh'
+      Real*8  x, y, M(2, 2)
+
+c      Metric(1,1) = (D/2.0-x)*(L/2.0-y)/D/L*4
+      M(1,1) = 1
+      M(1,2) = 0
+      M(2,1) = 0
+      M(2,2) = M(1,1)
       MetricFunction = 0
       Return
       End
+
+
+C =====================================================================
+      subroutine adapt_mesh(Quality)
+        include 'th.fh'
+
+        Real*8   Lp
+        Real*8 Metric(3,nvmax)
+
+        Integer  control(6), nEStar, dummy, iERR
+        Real*8   Quality
+
+        Write(*,*) 'create metric from solution'
+c  ===  generate metric (from SOL) optimal for the L_p norm
+c       Lp = 0             ! maximum norm
+        Lp = 1             ! L_1 norm
+        Call Nodal2MetricVAR(SOL_U(1),
+     &          vrt, nv, tri, nt, bnd, nb, Metric,
+     &          MaxWr, rW, MaxWi, iW)
+
+        If(Lp.GT.0) Call Lp_norm(nv, Lp, Metric)
+
+
+        Write(*,*) 'generate the adaptive mesh to u'
+c === generate the adaptive mesh to u
+         nEStar = 10000
+         control(1) = nEStar/10  ! MaxSkipE
+         control(2) = nEStar*10  ! MaxQItr
+         control(3) = 16+1    ! status = forbid boundary triangles (see aniMBA/status.fd)
+         control(4) = 1       ! flagAuto
+         control(5) = 0       ! iPrint = minimal level of output information
+         control(6) = 0       ! iErrMesgt: only critical termination allowed
+
+         Quality = 0.6
+
+         Call mbaNodal(
+c group (M)
+     &        nv, nvfix, nvmax, vrt, labelV, fixedV,
+     &        nb, nbfix, nbmax, bnd, labelB, fixedB,
+     &        nc,               crv, labelC, ANI_CrvFunction,
+     &        nt, ntfix, ntmax, tri, labelT, fixedT,
+c group (CONTROL)
+     &        nEStar, Quality, control, Metric,
+c group (W)
+     &        MaxWr, MaxWi, rW, iW, iERR)
+
+         If(iERR.GT.1000) Call errMesMBA(iERR, 'main',
+     &                        'unspecified error if mbaNodal')
+        return
+      end

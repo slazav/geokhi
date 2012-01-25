@@ -1,7 +1,6 @@
 c ======================================================================
       Program Th
 c ======================================================================
-      implicit none
       include 'th.fh'
 
 c ======================================================================
@@ -11,13 +10,15 @@ c ======================================================================
       include 'assemble.fd'
 
       Integer  IA(nfmax), JA(namax)
-      Real*8    A(namax), RHS(nfmax), SOL(nfmax), RES(nfmax)
+      Real*8    A(namax), RHS(nfmax), RES(nfmax)
 
       Integer  iDATAFEM(1), iSYS(MAXiSYS), controlFEM(3)
       Real*8   dDATAFEM(1)
 
       Integer  Dbc 
       EXTERNAL Dbc, FEM2Dext
+      Real*8   adapt_mesh
+      EXTERNAL adapt_mesh
 
 
 c ======================================================================
@@ -27,28 +28,17 @@ c ======================================================================
       Real*8   lucontrol(20), luinfo(90)
 
 
-c ======================================================================
-c for library aniLMR
-c ======================================================================
-      Real*8   Lp
-      Real*8   Metric(3,nvmax)
-
-
-c ======================================================================
-c for library aniMBA
-c ======================================================================
-      Integer  control(6), nEStar
-      Real*8   Quality
-      EXTERNAL CrvFunction_user
-
-
 c LOCAL VARIABLEs
-      Integer  i, j, dummy, iLoop, nLOOPs, nRow, nCol, iERR
-      Integer  nr, ibc, iv1,iv2
+      Integer  i, j, dummy, iLoop, nLOOPs, nRow, nCol
       Real*8   rmax, h, x, y, eBC(2)
-      Character*30 file_mesh, file_velocity
 
-      Integer  ipIRE,ipWork, MaxWiWork
+      Real*8   Quality
+
+
+        Real*8   Lp
+        Real*8   Metric(3,nvmax)
+
+        Integer  control(6), nEStar, iERR
 
 
 c ======================================================================
@@ -70,22 +60,6 @@ c === no data is provided for the user subroutine Ddiff
 c mark the Dirichlet points with the maximal edge color
          Call markDIR(nv, vrt, labelV, nb, bnd, labelB, 
      &                Dbc, dDATAFEM, iDATAFEM, iSYS)
-
-c      write (*,*) 'VRT:'
-c      Do i=1, nv
-c        write (*,*) vrt(1,i), vrt(2,i), labelV(i)
-c      End do
-
-c      write (*,*) 'BRD:'
-c      Do i=1, nb
-c        write (*,*) bnd(1,i), bnd(2,i), labelB(i)
-c      End do
-
-c      write (*,*) 'TRI:'
-c      Do i=1, nt
-c        write (*,*) tri(1,i), tri(2,i), tri(3,i), labelT(i)
-c      End do
-
 
 c === general sparse matrix in a 0-based CSC format used in UMFPACK
          controlFEM(1) = IOR(MATRIX_GENERAL, FORMAT_CSC)
@@ -118,7 +92,7 @@ c free the symbolic analysis data
 
 c solve Ax=b, without iterative refinement
          sys = 0
-         Call umf4sol(sys, SOL, RHS, numeric, lucontrol,luinfo)
+         Call umf4sol(sys, SOL_U, RHS, numeric, lucontrol,luinfo)
          If(luinfo(1).LT.0) Goto 5003
 
 c free the numeric factorization data
@@ -126,7 +100,7 @@ c free the numeric factorization data
 
 
 c check the residual
-         Call mulAcsc0(nRow, IA, JA, A, SOL, RES)
+         Call mulAcsc0(nRow, IA, JA, A, SOL_U, RES)
          rmax = 0
          Do i = 1, nRow
             rmax = max(rmax, RES(i) - RHS(i))
@@ -134,50 +108,41 @@ c check the residual
          Write(*,'(A,E12.6)') 'LU:  maximal norm of residual: ', rmax
 
 
-c === draw mesh and solution isolines as ps-figures (mid-edges are ignored)
-         nr  = (nRow - 3*nv) / 2
-
-c  PostScript file names must have extension .ps
-c  demo graphics has been activated
-c  Isolines of velocity components can be done with the following calls:
-c  Call isolines(SOL(iux), nv,vrt, nt,tri, nb,bnd,'velocity_x.ps',20)
-c  Call isolines(SOL(iuy), nv,vrt, nt,tri, nb,bnd,'velocity_y.ps',20)
+c === draw mesh and solution as ps-figures
          If(iLoop.EQ.1) Then
-            Call isolines_demo(SOL(1), nv,vrt, nt,tri, nb,bnd,
-     &           'streamlines_ini.ps', 50, '')
-            Call graph_demo(nv,vrt, nt,tri,
-     &           'mesh_ini.ps', '')
-            Call draw_matrix(nRow, IA, JA, 'matrix_ini.ps')
+            Call isolines_demo(SOL_U(1), nv,vrt, nt,tri, nb,bnd,
+     &           'sol_u_ini.ps', 50, '')
          Else
-            Call isolines_demo(SOL(1), nv,vrt, nt,tri, nb,bnd,
-     &           'streamlines_fin.ps', 50, '')
-            Call graph_demo(nv,vrt, nt,tri, 'mesh_final.ps', '')
-            Call draw_matrix(nRow, IA, JA, "matrix_fin.ps")
+            Call isolines_demo(SOL_U(1), nv,vrt, nt,tri, nb,bnd,
+     &           'sol_u_fin.ps', 50, '')
+            Call graph_demo(nv,vrt, nt,tri, 'meshF.ps', '')
          End if
-
          If(iLoop.eq.nLOOPs) Goto 500
 
+c         Quality = adapt_mesh()
+c         Write (*,*) 'Quality: ', Quality
 
-         Write(*,*) 'generate metric (from SOL)'
-c  ===   generate metric (from SOL) optimal for the L_p norm
-c        Lp = 0             ! maximum norm
-         Lp = 1             ! L_1 norm
-         Call Nodal2MetricVAR(SOL(1),
-     &                        vrt, nv, tri, nt, bnd, nb, Metric,
-     &                        MaxWr, rW, MaxWi, iW)
+C =====================================================================
 
-         Write(*,*) 'Lp_norm'
-         If(Lp.GT.0) Call Lp_norm(nv, Lp, Metric)
+        Write(*,*) 'create metric from solution'
+c  ===  generate metric (from SOL) optimal for the L_p norm
+c       Lp = 0             ! maximum norm
+        Lp = 1             ! L_1 norm
+        Call Nodal2MetricVAR(SOL_U(1),
+     &          vrt, nv, tri, nt, bnd, nb, Metric,
+     &          MaxWr, rW, MaxWi, iW)
+
+        If(Lp.GT.0) Call Lp_norm(nv, Lp, Metric)
 
 
-         Write(*,*) 'generate the adaptive mesh to u'
+        Write(*,*) 'generate the adaptive mesh to u'
 c === generate the adaptive mesh to u
-         nEStar = 20000
+         nEStar = 10000
          control(1) = nEStar/10  ! MaxSkipE
          control(2) = nEStar*10  ! MaxQItr
          control(3) = 16+1    ! status = forbid boundary triangles (see aniMBA/status.fd)
          control(4) = 1       ! flagAuto
-         control(5) = 1       ! iPrint = minimal level of output information
+         control(5) = 0       ! iPrint = minimal level of output information
          control(6) = 0       ! iErrMesgt: only critical termination allowed
 
          Quality = 0.6
@@ -195,22 +160,20 @@ c group (W)
 
          If(iERR.GT.1000) Call errMesMBA(iERR, 'main',
      &                        'unspecified error if mbaNodal')
+C =====================================================================
 
- 500     Continue
+
+
+  500    continue
       End do
-
 
 c === testing the results
       If(Quality.LT.0.5) Stop 911
-      Stop 
+      Stop
+
 
 
 c error messages
- 5000 Format(
-     & 'Program generates a mesh using the advanced front technique.',/,
-     & '  The initial front has', I4, ' edges.',/,
-     & '  The final mesh has', I4, ' triangles and', I4, ' vertices.',/,
-     & 'Created Postscript figure $(ANIHOME)/bin/mesh_final.ps.',/)
  5001 Continue
       Write(*,*) 'Error occurred in umf4sym: ', luinfo(1)
       Stop 911
