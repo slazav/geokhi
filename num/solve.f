@@ -1,3 +1,94 @@
+      Subroutine solve
+        include 'th.fh'
+        include 'fem2Dtri.fd'
+        include 'assemble.fd'
+
+        Integer  IA(nfmax), JA(namax)
+        Real*8    A(namax), RHS(nfmax), RES(nfmax)
+
+        Integer  iDATAFEM(1), iSYS(MAXiSYS), controlFEM(3)
+        Real*8   dDATAFEM(1)
+
+        Integer  Dbc
+        EXTERNAL Dbc, FEM2Dext
+
+        Integer  symbolic(2), numeric(2), sys
+        Real*8   lucontrol(20), luinfo(90)
+
+        Integer  i, nRow, nCol
+        Real*8   rmax, h, x, y, eBC(2)
+
+
+c === no data is provided for the user subroutine Ddiff
+        dDATAFEM(1) = 0D0
+        iDATAFEM(1) = 0
+
+c mark the Dirichlet points with the maximal edge color
+        Call markDIR(nv, vrt, labelV, nb, bnd, labelB,
+     &                Dbc, dDATAFEM, iDATAFEM, iSYS)
+
+c === general sparse matrix in a 0-based CSC format used in UMFPACK
+        controlFEM(1) = IOR(MATRIX_GENERAL, FORMAT_CSC)
+        controlFEM(2) = 1
+ 
+        Call BilinearFormTemplate(
+     &        nv, nb, nt, vrt, labelV, bnd, labelB, tri, labelT,
+     &        FEM2Dext, dDATAFEM, iDATAFEM, controlFEM,
+     &        nfmax, namax, IA, JA, A, RHS, nRow, nCol,
+     &        MaxWi, MaxWr, iW, rW)
+
+
+c  ===   call the driver for LU factorization and solution
+        Call CSC2CSC0(nCol, IA, JA)
+
+c set up default control parameters & print only error messages
+        Call umf4def(lucontrol)
+        lucontrol(1) = 1
+
+c pre-order and symbolic analysis
+        Call umf4sym(nCol, nCol, IA,JA,A, symbolic,lucontrol,luinfo)
+        If(luinfo(1).LT.0) Goto 5001
+
+c numeric factorization
+        Call umf4num(IA,JA,A, symbolic,numeric,lucontrol,luinfo)
+        If(luinfo(1).LT.0) Goto 5002
+
+c free the symbolic analysis data
+        Call umf4fsym(symbolic)
+
+c solve Ax=b, without iterative refinement
+        sys = 0
+        Call umf4sol(sys, SOL_U, RHS, numeric, lucontrol,luinfo)
+        If(luinfo(1).LT.0) Goto 5003
+
+c free the numeric factorization data
+        Call umf4fnum (numeric)
+
+c check the residual
+        Call mulAcsc0(nRow, IA, JA, A, SOL_U, RES)
+        rmax = 0
+        Do i = 1, nRow
+            rmax = max(rmax, RES(i) - RHS(i))
+        End do
+        Write(*,'(A,E12.6)') 'LU:  maximal norm of residual: ', rmax
+
+         return
+c error messages
+ 5001   Continue
+        Write(*,*) 'Error occurred in umf4sym: ', luinfo(1)
+        Stop 911
+
+ 5002   Continue
+        Write(*,*) 'Error occurred in umf4num: ', luinfo(1)
+        Stop 911
+
+ 5003   Continue
+        Write(*,*) 'Error occurred in umf4sol: ', luinfo(1)
+        Stop 911
+
+      end
+
+
 C ======================================================================
       Subroutine FEM2Dext(XY1, XY2, XY3, 
      &           lbE, lbF, lbP, dDATA, iDATA, iSYS,

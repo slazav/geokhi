@@ -1,3 +1,14 @@
+
+C =====================================================================
+      subroutine draw_mesh(filename, desc)
+        include 'th.fh'
+        character*(*) filename, desc
+        Write(*,*) '   Writing ', desc,' mesh into ', filename
+        Write(*,*) nt, ' triangles and ', nv, 'vertices.'
+        call graph_demo(nv,vrt, nt,tri, filename, '')
+        return
+      end
+
 C ====== make initial mesh from cell dimensions
       subroutine create_mesh()
         include 'th.fh'
@@ -48,6 +59,7 @@ C ====== make initial mesh from cell dimensions
         nbr = 9
 
 C Generate a mesh
+        Write(*,5101) Nbr
         iERR=aft2dfront(
      &           0, dummy, nbr, vbr,   ! segment data
      &           nv, vrt,              ! mesh data on output
@@ -55,31 +67,21 @@ C Generate a mesh
      &           nb, bnd, labelB)
         If (iERR.ne.0) stop ' error in function aft2dfront'
 
-        Write(*,5101) Nbr
-        Write(*,5102) nt, nv
-        Write(*,*) '   Writing initial mesh into mesh0.ps'
-        Call graph_demo(nv,vrt,nt,tri, 'mesh0.ps', '')
+        Call draw_mesh('mesh0.ps', 'initial')
 
         labelB(3) = 2
         labelB(8) = 3
 
 C Refine mesh
 
-         call refine_mesh
-
-        Write(*,5102) nt, nv
-        Write(*,*) '   Writing refined mesh into mesh1.ps'
-        Call graph_demo(nv,vrt,nt,tri, 'mesh1.ps', '')
+        call refine_mesh
+        call draw_mesh('mesh1.ps', 'refined')
 
         return
 
 c =======
  5101   format(
-     &  '  The initial front has', I4, ' edges.')
- 5102   format(
-     &  '  The mesh has', I4, ' triangles and',
-     &  I4, ' vertices.')
-
+     &  '  The initial front has ', I4, ' edges.')
 
       end
 
@@ -117,8 +119,8 @@ c group (W)
 
 c        Call smoothingMesh(
 c     &        nv, nt, vrt,  tri, MaxWi, iW)
-        Call Delaunay(
-     &        nv, nt, vrt,  tri, MaxWi, iW)
+c        Call Delaunay(
+c     &        nv, nt, vrt,  tri, MaxWi, iW)
 
       end
 C =====================================================================
@@ -154,14 +156,14 @@ C =====================================================================
         Real*8   Lp
         Real*8 Metric(3,nvmax)
 
-        Integer  control(6), nEStar, dummy, iERR
+        Integer  control(6), nEStar, iERR
         Real*8   Quality
 
         Write(*,*) 'create metric from solution'
 c  ===  generate metric (from SOL) optimal for the L_p norm
 c       Lp = 0             ! maximum norm
         Lp = 1             ! L_1 norm
-        Call Nodal2MetricVAR(SOL_U(1),
+        Call Nodal2MetricVAR(SOL_U,
      &          vrt, nv, tri, nt, bnd, nb, Metric,
      &          MaxWr, rW, MaxWi, iW)
 
@@ -170,7 +172,7 @@ c       Lp = 0             ! maximum norm
 
         Write(*,*) 'generate the adaptive mesh to u'
 c === generate the adaptive mesh to u
-         nEStar = 10000
+         nEStar = 8000
          control(1) = nEStar/10  ! MaxSkipE
          control(2) = nEStar*10  ! MaxQItr
          control(3) = 16+1    ! status = forbid boundary triangles (see aniMBA/status.fd)
@@ -193,5 +195,6 @@ c group (W)
 
          If(iERR.GT.1000) Call errMesMBA(iERR, 'main',
      &                        'unspecified error if mbaNodal')
+
         return
       end

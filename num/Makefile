@@ -9,7 +9,7 @@ LIBS	= -L $(ANILIB) $(LIBAFT) $(LIBFEM) $(LIBLU) $(LIBLMR) $(LIBMBA) \
 ############################################################
 all: main
 
-OBJ  =  main.o forlibfem.o create_mesh.o read_cfg.o
+OBJ  =  main.o solve.o mesh.o read_cfg.o
 
 
 ############################################################
