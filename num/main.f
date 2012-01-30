@@ -86,7 +86,7 @@ c === testing the results
         y2=0.005D0
         np=500
 
-        do i=i,5
+        do i=1,5
           write(filename,'(A,A,I1,A)') 'res/sol_', par, i,'.dat'
           call write_line(x(i),x(i),y1,y2, np, u, filename)
         enddo
