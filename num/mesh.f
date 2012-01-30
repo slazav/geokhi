@@ -5,7 +5,9 @@ C =====================================================================
         character*(*) filename, desc
         Write(*,*) '   Writing ', desc,' mesh into ', filename
         Write(*,*) nt, ' triangles and ', nv, 'vertices.'
+        Write(*,*) nc, ' curves ', nb, 'boundary edges'
         call graph_demo(nv,vrt, nt,tri, filename, '')
+c        call graph(nv,vrt, nt,tri, filename)
         return
       end
 
@@ -14,7 +16,7 @@ C ====== make initial mesh from cell dimensions
         include 'th.fh'
         Integer   aft2dfront
         EXTERNAL  aft2dfront
-        double precision vbr(2,nbmax)
+        double precision vbr(2,nbmax), tmp(2)
         integer nbr, dummy
 
         integer  ipIRE,ipWork, MaxWiWork, iERR
@@ -29,34 +31,55 @@ C ====== make initial mesh from cell dimensions
         Write (*,*) '  Ld = ', Ld
         Write (*,*) '  Dd = ', Dd
 
-        vbr(1,1) = 0
-        vbr(2,1) = 0
+        nbr=1
 
-        vbr(1,2) = 0
-        vbr(2,2) = (L-Lw)/2.0
+        vbr(1,nbr) = 0D0
+        vbr(2,nbr) = 0D0
 
-        vbr(1,3) = Dw/2.0
-        vbr(2,3) = vbr(2,2)
+        nbr=nbr+1
+        vbr(1,nbr) = 0D0
+        vbr(2,nbr) = (L-Lw)/2.0D0
 
-        vbr(1,4) = vbr(1,3)
-        vbr(2,4) = L/2.0
+        nbr=nbr+1
+        vbr(1,nbr) = Dw/2.0D0
+        vbr(2,nbr) = vbr(2,2)
 
-        vbr(1,5) = D/2.0
-        vbr(2,5) = L/2.0
+        nbr=nbr+1
+        vbr(1,nbr) = vbr(1,3)
+        vbr(2,nbr) = L/2.0D0
 
-        vbr(1,6) = D/2.0
-        vbr(2,6) = Ld/2.0
+        nbr=nbr+1
+        vbr(1,nbr) = D/2.0D0
+        vbr(2,nbr) = L/2.0D0
 
-        vbr(1,7) = Dd/2.0
-        vbr(2,7) = Ld/2.0
+        nbr=nbr+1
+        vbr(1,nbr) = D/2.0D0
+        vbr(2,nbr) = Ld/2.0D0
 
-        vbr(1,8) = Dd/2.0
-        vbr(2,8) = 0
 
-        vbr(1,9) = 0
-        vbr(2,9) = 0
+        nbr=nbr+1 
+        call crv_func(0,tmp,1)
+        vbr(1,nbr) = tmp(1)
+        vbr(2,nbr) = tmp(2)
 
-        nbr = 9
+        nbr=nbr+1 
+        call crv_func(dasin(1D0)/2D0,tmp,1)
+        vbr(1,nbr) = tmp(1)
+        vbr(2,nbr) = tmp(2)
+
+        nbr=nbr+1 
+        call crv_func(dasin(1D0),tmp,1)
+        vbr(1,nbr) = tmp(1)
+        vbr(2,nbr) = tmp(2)
+
+
+        nbr=nbr+1
+        vbr(1,nbr) = Dd/2.0D0
+        vbr(2,nbr) = 0D0
+
+        nbr=nbr+1
+        vbr(1,nbr) = vbr(1,1)
+        vbr(2,nbr) = vbr(2,1)
 
 C Generate a mesh
         Write(*,5101) Nbr
@@ -67,15 +90,30 @@ C Generate a mesh
      &           nb, bnd, labelB)
         If (iERR.ne.0) stop ' error in function aft2dfront'
 
-        Call draw_mesh('mesh0.ps', 'initial')
+        Call draw_mesh('res/mesh0.ps', 'initial')
 
-        labelB(3) = 2
-        labelB(8) = 3
 
-C Refine mesh
 
+        labelB(1) = 5     ! center line
+        labelB(2) = 4     ! cell walls
+        labelB(4) = 4
+        labelB(5) = 4
+        labelB(3) = 3     ! u=u0/2
+        labelB(7) = 10
+        labelB(8) = 10
+        labelB(10) = 2 ! center plane (u=0)
+
+        nc = 2
+        crv(1,7) = 0D0
+        crv(2,7) = dasin(1D0)/2D0
+        labelC(7) = 1
+        crv(1,8) = dasin(1D0)/2D0
+        crv(2,8) = dasin(1D0)
+        labelC(8) = 1
+
+c Refine mesh
         call refine_mesh
-        call draw_mesh('mesh1.ps', 'refined')
+        call draw_mesh('res/mesh1.ps', 'refined')
 
         return
 
@@ -85,6 +123,15 @@ c =======
 
       end
 
+C =====================================================================
+      subroutine crv_func(tc, xyc, iFunc)
+        include 'th.fh'
+        Real*8 tc, xyc(2)
+        integer iFunc
+c       tc = 0..pi/2
+        xyc(1) = Dd/2D0 + Dr * (1D0 - dsin(tc))
+        xyc(2) = Ld/2D0 - Dr * (1D0 - dcos(tc))
+      end
 
 C =====================================================================
       subroutine refine_mesh()
@@ -92,8 +139,9 @@ C =====================================================================
         Integer  nEStar, iERR
         Integer  control(6)
         Real*8   Quality
-        Integer  MetricFunction
-        External MetricFunction
+        Integer  metric_func
+        External metric_func
+        External crv_func
 
 c === generate adaptive mesh
         control(1) = 500     !  MaxSkipE
@@ -104,18 +152,20 @@ c === generate adaptive mesh
         control(6) = 0       !  iErrMesgt: only critical termination allowed
 
         Quality = 0.99D0      !  request shape-regular triangles in metric
-        nEStar  = 3000       !  desired number of triangles
+        nEStar  = INI_TRI_NUM !  desired number of triangles
 
-      Call mbaAnalytic(
+c      Call mbaAnalytic(
+      call mbaFixShape(
 c group (M)
      &      nv, nvfix, nvmax, vrt, labelV, fixedV,
      &      nb, nbfix, nbmax, bnd, labelB, fixedB,
-     &      nc,               crv, labelC, ANI_CrvFunction,
+     &      nc,               crv, labelC, crv_func,
      &      nt, ntfix, ntmax, tri, labelT, fixedT,
 c group (CONTROL)
-     &      nEStar, Quality, control, MetricFunction,
+     &      nEStar, Quality, control, metric_func,
 c group (W)
      &      MaxWr, MaxWi, rW, iW, iERR)
+      write (*,*) 'quality after refining: ', Quality
 
 c        Call smoothingMesh(
 c     &        nv, nt, vrt,  tri, MaxWi, iW)
@@ -124,7 +174,7 @@ c     &        nv, nt, vrt,  tri, MaxWi, iW)
 
       end
 C =====================================================================
-      Integer Function MetricFunction(x, y, M)
+      Integer Function metric_func(x, y, M)
 C =====================================================================
 C  This routine creates a metric at the given point (x,y). The
 C  metric is a 2x2 positive definite symmetric tensor:
@@ -144,38 +194,40 @@ c      Metric(1,1) = (D/2.0-x)*(L/2.0-y)/D/L*4
       M(1,2) = 0
       M(2,1) = 0
       M(2,2) = M(1,1)
-      MetricFunction = 0
+      metric_func = 0
       Return
       End
 
 
 C =====================================================================
-      subroutine adapt_mesh(Quality)
+      subroutine adapt_mesh(Quality, F)
         include 'th.fh'
+
+        Real*8   F(nfmax)
 
         Real*8   Lp
         Real*8 Metric(3,nvmax)
 
         Integer  control(6), nEStar, iERR
         Real*8   Quality
+        External crv_func
 
-        Write(*,*) 'create metric from solution'
 c  ===  generate metric (from SOL) optimal for the L_p norm
 c       Lp = 0             ! maximum norm
         Lp = 1             ! L_1 norm
-        Call Nodal2MetricVAR(SOL_U,
+        Call Nodal2MetricVAR(F,
      &          vrt, nv, tri, nt, bnd, nb, Metric,
      &          MaxWr, rW, MaxWi, iW)
 
         If(Lp.GT.0) Call Lp_norm(nv, Lp, Metric)
 
 
-        Write(*,*) 'generate the adaptive mesh to u'
+        Write(*,*) 'generate the adaptive mesh...'
 c === generate the adaptive mesh to u
-         nEStar = 8000
+         nEStar = FIN_TRI_NUM
          control(1) = nEStar/10  ! MaxSkipE
          control(2) = nEStar*10  ! MaxQItr
-         control(3) = 16+1    ! status = forbid boundary triangles (see aniMBA/status.fd)
+         control(3) = 32+1    ! status = forbid boundary triangles (see aniMBA/status.fd)
          control(4) = 1       ! flagAuto
          control(5) = 0       ! iPrint = minimal level of output information
          control(6) = 0       ! iErrMesgt: only critical termination allowed
@@ -186,7 +238,7 @@ c === generate the adaptive mesh to u
 c group (M)
      &        nv, nvfix, nvmax, vrt, labelV, fixedV,
      &        nb, nbfix, nbmax, bnd, labelB, fixedB,
-     &        nc,               crv, labelC, ANI_CrvFunction,
+     &        nc,               crv, labelC, crv_func,
      &        nt, ntfix, ntmax, tri, labelT, fixedT,
 c group (CONTROL)
      &        nEStar, Quality, control, Metric,
@@ -195,6 +247,7 @@ c group (W)
 
          If(iERR.GT.1000) Call errMesMBA(iERR, 'main',
      &                        'unspecified error if mbaNodal')
+      write (*,*) 'mesh quality: ', Quality
 
         return
       end

@@ -1,4 +1,11 @@
-      Subroutine solve
+      Subroutine draw_t(filename)
+        include 'th.fh'
+        character*(*) filename
+        Call isolines_demo(SOL_T, nv,vrt, nt,tri, nb,bnd,
+     &         filename, 50, '')
+      end
+
+      Subroutine solve_t
         include 'th.fh'
         include 'fem2Dtri.fd'
         include 'assemble.fd'
@@ -9,8 +16,8 @@
         Integer  iDATAFEM(1), iSYS(MAXiSYS), controlFEM(3)
         Real*8   dDATAFEM(1)
 
-        Integer  Dbc
-        EXTERNAL Dbc, FEM2Dext
+        Integer  Dbc_t
+        External FEM2Dext_t, Dbc_t
 
         Integer  symbolic(2), numeric(2), sys
         Real*8   lucontrol(20), luinfo(90)
@@ -25,15 +32,15 @@ c === no data is provided for the user subroutine Ddiff
 
 c mark the Dirichlet points with the maximal edge color
         Call markDIR(nv, vrt, labelV, nb, bnd, labelB,
-     &                Dbc, dDATAFEM, iDATAFEM, iSYS)
+     &                Dbc_t, dDATAFEM, iDATAFEM, iSYS)
 
 c === general sparse matrix in a 0-based CSC format used in UMFPACK
         controlFEM(1) = IOR(MATRIX_GENERAL, FORMAT_CSC)
-        controlFEM(2) = 1
+        controlFEM(2) = 1 ! verbosity
  
         Call BilinearFormTemplate(
      &        nv, nb, nt, vrt, labelV, bnd, labelB, tri, labelT,
-     &        FEM2Dext, dDATAFEM, iDATAFEM, controlFEM,
+     &        FEM2Dext_t, dDATAFEM, iDATAFEM, controlFEM,
      &        nfmax, namax, IA, JA, A, RHS, nRow, nCol,
      &        MaxWi, MaxWr, iW, rW)
 
@@ -58,14 +65,14 @@ c free the symbolic analysis data
 
 c solve Ax=b, without iterative refinement
         sys = 0
-        Call umf4sol(sys, SOL_U, RHS, numeric, lucontrol,luinfo)
+        Call umf4sol(sys, SOL_T, RHS, numeric, lucontrol,luinfo)
         If(luinfo(1).LT.0) Goto 5003
 
 c free the numeric factorization data
         Call umf4fnum (numeric)
 
 c check the residual
-        Call mulAcsc0(nRow, IA, JA, A, SOL_U, RES)
+        Call mulAcsc0(nRow, IA, JA, A, SOL_T, RES)
         rmax = 0
         Do i = 1, nRow
             rmax = max(rmax, RES(i) - RHS(i))
@@ -90,7 +97,7 @@ c error messages
 
 
 C ======================================================================
-      Subroutine FEM2Dext(XY1, XY2, XY3, 
+      Subroutine FEM2Dext_t(XY1, XY2, XY3, 
      &           lbE, lbF, lbP, dDATA, iDATA, iSYS,
      &           LDA, A, F, nRow, nCol,
      &           templateR, templateC)
@@ -109,8 +116,8 @@ C ======================================================================
       Integer templateR(*), templateC(*)
 
 C Local variables
-      Integer  Ddiff, Drhs, Dbc
-      External Ddiff, Drhs, Dbc
+      Integer  Ddiff_t, Drhs_t, Dbc_t
+      External Ddiff_t, Drhs_t, Dbc_t
 
       Integer  i,k, ir,ic, label, ibc
       Real*8   x, y, eBC(1)
@@ -129,13 +136,13 @@ c ... set up templates
 c ... compute the stiffness matrix A
       Call fem2Dtri(XY1, XY2, XY3,
      &              GRAD, FEM_P1, GRAD, FEM_P1,
-     &              label, Ddiff, dDATA, iDATA, iSYS, 1,
+     &              label, Ddiff_t, dDATA, iDATA, iSYS, 1,
      &              LDA, A, ir, ic)
 
 c ... compute right hand side F
       Call fem2Dtri(XY1, XY2, XY3,
      &              IDEN, FEM_P0, IDEN, FEM_P1,
-     &              lbE, Drhs, dDATA, iDATA, iSYS, 2,
+     &              lbE, Drhs_t, dDATA, iDATA, iSYS, 2,
      &              1, F, ir, ic)
 
 c ... impose boundary conditions (assume nRow = nCol)
@@ -152,7 +159,7 @@ c ... impose boundary conditions (assume nRow = nCol)
                y = XY3(2)
             End if
 
-            ibc = Dbc(x, y, lbP(k), dDATA, iDATA, iSYS, eBC)
+            ibc = Dbc_t(x, y, lbP(k), dDATA, iDATA, iSYS, eBC)
 
             If(ifXbc(ibc, BC_DIRICHLET)) Then
                Call applyDIR(LDA, nRow, A, F, k, eBC)
@@ -168,7 +175,7 @@ c ... impose boundary conditions (assume nRow = nCol)
 C ======================================================================
 C  Diffusion tensor             
 C ======================================================================
-      Integer Function Ddiff(x, y, label, dDATA, iDATA, iSYS, Coef)
+      Integer Function Ddiff_t(x, y, label, dDATA, iDATA, iSYS, Coef)
       include 'fem2Dtri.fd'
 
       Real*8  dDATA(*), x, y, Coef(MaxTensorSize, 4)
@@ -177,9 +184,8 @@ C ======================================================================
       iSYS(1) = 1
       iSYS(2) = 1
 
-      Coef(1,1) = 1D0
-
-      Ddiff = TENSOR_NULL
+      Coef(1,1) = x
+      Ddiff_t = TENSOR_SCALAR
 
       Return
       End
@@ -189,7 +195,8 @@ C ======================================================================
 C ======================================================================
 C Boundary condition
 C ======================================================================
-      Integer Function Dbc(x, y, label, dDATA, iDATA, iSYS, eBC)
+      Integer Function Dbc_t(x, y, label, dDATA, iDATA, iSYS, eBC)
+c      Include 'th.fh'
       Include 'fem2Dtri.fd'
 
       Real*8  dDATA(*), x, y, eBC(MaxTensorSize, *)
@@ -198,18 +205,12 @@ C ======================================================================
       iSYS(1) = 1
       iSYS(2) = 1
 
-      If (label.EQ.1) Then
-         Dbc = BC_NEUMANN
+      If (label.eq.4.or.label.eq.3) Then
+         Dbc_t = BC_DIRICHLET
          eBC(1,1) = 0D0
-      Else If (label.EQ.2) Then
-         Dbc = BC_DIRICHLET
-         eBC(1,1) = 0D0
-      Else If (label.EQ.3) Then
-         Dbc = BC_DIRICHLET
-         eBC(1,1) = 1D0
       Else
-         Write(*,*) 'Dbc: wrong label=', label
-         Stop
+         Dbc_t = BC_NEUMANN
+         eBC(1,1) = 0D0
       End if
 
       Return
@@ -220,105 +221,48 @@ C ======================================================================
 C ======================================================================
 C Right hand side
 C ======================================================================
-      Integer Function Drhs(x, y, label, dDATA, iDATA, iSYS, F)
+      Integer Function Drhs_t(x, y, label, dDATA, iDATA, iSYS, F)
+      Include 'th.fh'
       Include 'fem2Dtri.fd'
 
       Real*8  dDATA(*), x, y, F(MaxTensorSize, *)
       Integer iDATA(*), label, iSYS(*)
+      integer idx, iv1, iv2, iv3
+      double precision xy1(2), xy2(2), xy3(2)
+      double precision a,b,c,ddd
+      external tri_area0
+      double precision tri_area0
 
-      iSYS(1) = 1
-      iSYS(2) = 1
+c     interpolation code from aniMBA/lintrp2D.f
+        idx = iSYS(3)
+        iv1 = tri(1, idx)
+        iv2 = tri(2, idx)
+        iv3 = tri(3, idx)
 
-      F(1, 1) = 0D0
-      Drhs = TENSOR_SCALAR
+        xy1(1) = vrt(1, iv1) - x
+        xy2(1) = vrt(1, iv2) - x
+        xy3(1) = vrt(1, iv3) - x
+        xy1(2) = vrt(2, iv1) - y
+        xy2(2) = vrt(2, iv2) - y
+        xy3(2) = vrt(2, iv3) - y
 
-      Return
-      End
+        a = tri_area0(xy2, xy3)
+        b = tri_area0(xy3, xy1)
+        c = tri_area0(xy1, xy2)
+        ddd = a + b + c
 
+        If(ddd.EQ.0D0) Then
+         a = 1D0
+         ddd = 1D0
+        End if
 
+        F(1,1) = (a * SOL_GU2(iv1) + b * SOL_GU2(iv2)
+     &                             + c * SOL_GU2(iv3)) / ddd
 
-c ======================================================================
-c  Exact (analytical) solution
-c ======================================================================
-      Integer Function DexactU(x, y, label, dDATA, iDATA, iSYS, U)
-      Include 'fem2Dtri.fd'
-
-      Real*8   dDATA(*), x, y, U(MaxTensorSize, *)
-      Integer  iDATA(*), label, iSYS(*)
-
-      Real*8   phi, r, pi
-
-c ======================================================================
-      iSYS(1) = 1
-      iSYS(2) = 1
-
-      pi = 4d0*datan(1d0)
-
-      If(x.gt.1d-10) Then
-         phi = datan(y/x)
-         If(phi.lt.0) phi = phi+2*pi
-
-      Else If(x.lt.-1d-10) Then
-         phi = datan(y/dabs(x))
-         phi = pi - phi
-
-      Else
-         If(y.gt.0) phi = pi/2
-         If(y.le.0) phi = 3*pi/2
-      End if
-
-      r = dsqrt(x**2 + y**2)
-      U(1,1) = r**0.25d0 * dsin(phi/4)
-
-      DexactU = TENSOR_SCALAR
+        iSYS(1) = 1
+        iSYS(2) = 1
+        F(1,1) = F(1,1) * x
+        Drhs_t = TENSOR_SCALAR
 
       Return
       End
-
-
-
-c ======================================================================
-c  Exact (analytical) gradient of the solution
-c ======================================================================
-      Integer Function DgradU(x, y, label, dDATA, iDATA, iSYS, U)
-      implicit none
-      Include 'fem2Dtri.fd'
-
-      Real*8    dDATA(*), x, y, U(MaxTensorSize, *)
-      Integer   iDATA(*), label, iSYS(*)
-        
-      Integer   DexactU, i
-      EXTERNAL  DExactU
-
-      Real*8    delta, xD, yD, u0(1), uD(1)
-      PARAMETER(delta = 1d-9)
-
-c ==========================================================
-      xD = x + delta
-
-      i = DexactU(x,  y, label, dDATA, iDATA, iSYS, u0)
-      i = DexactU(xD, y, label, dDATA, iDATA, iSYS, uD)
-
-      U(1,1) = (uD(1) - u0(1)) / delta
-
-      If(y.gt.0D0) Then
-         yD = y + delta
-         i  = DexactU(x, yD, label, dDATA, iDATA, iSYS, uD)
-         U(2,1) = (uD(1) - u0(1)) / delta
-      Else
-         yD = y - delta
-         i  = DexactU(x, yD, label, dDATA, iDATA, iSYS, uD)
-         U(2,1) = -(uD(1) - u0(1)) / delta
-      End if
-
-      iSYS(1) = 2
-      iSYS(2) = 1
-      DgradU = TENSOR_GENERAL
-
-      Return
-      End
-
-
-
-
-

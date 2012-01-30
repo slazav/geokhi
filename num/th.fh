@@ -6,10 +6,14 @@ c === parameters read from configuration file
      +  L, D,   ! cell dimensions
      +  Dw, Lw, ! window dimensions
      +  Dd, Ld, ! diaphragm dimensions
-     +  U0      ! voltage, V
+     +  Dr,     ! diaphragm edge /may by 0/
+     +  U0,     ! voltage, V
+     +  INI_TRI_NUM, ! number or triangles in initial mesh refining
+     +  FIN_TRI_NUM  ! number or triangles in the final mesh
 
-      real*8  L, D, Dw, Lw, Dd, Ld
+      real*8  L, D, Dw, Lw, Dd, Ld, Dr
       real*8  U0
+      integer INI_TRI_NUM, FIN_TRI_NUM
 
 c === mesh data
 
@@ -38,9 +42,11 @@ c namax - maximum number of non-zero matrix entries
 
 c === solutions
       common /SOL_DATA/ ! solutions data
-     +   SOL_U
+     +   SOL_U, SOL_GU2, SOL_T
 
-      Real*8   SOL_U(nfmax)
+      double precision   SOL_U(nfmax)
+      double precision   SOL_T(nfmax)
+      double precision   SOL_GUx(nfmax),SOL_GUy(nfmax), SOL_GU2(nfmax)
 
 
 c === work memory
