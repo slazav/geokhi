@@ -15,7 +15,7 @@ c Local variables
         Real*8 GrP0(nt), Gr(2)
         integer iErr
 
-        Real*8 xy1(2),xy2(2),xy3(2), u1,u2,u3
+        Real*8 xy1(2),xy2(2),xy3(2), u1,u2,u3, S
 
 C ======================================================================
 
@@ -29,8 +29,14 @@ C ======================================================================
           u2=SOL_U(tri(2,n))
           u3=SOL_U(tri(3,n))
 
+          if (labelT(n).eq.1) then 
+            S = PHYS_SIGMA
+          else
+            S = PHYS_SIGMAd
+          endif
+
           call GradUtri(xy1,xy2,xy3, u1,u2,u3, Gr)
-          GrP0(n)=(Gr(1)**2+Gr(2)**2) * PHYS_SIGMA
+          GrP0(n)=(Gr(1)**2+Gr(2)**2)*S
         end do
 
         call P02P1(nv,nt,vrt,tri, GrP0, SOL_Q, MaxWi, iW, iErr)

@@ -9,13 +9,16 @@ c === parameters read from configuration file
      +  DIM_Dr,         ! diaphragm edge /may by 0/
      +  PHYS_U0,        ! voltage [V]
      +  PHYS_SIGMA,     ! [1/Ohm/m]
+     +  PHYS_SIGMAD,    ! [1/Ohm/m]
      +  PHYS_RHO,       ! [kg/m^3]
      +  PHYS_CV,        ! [J/kg/K]
      +  PHYS_K,         ! [Watt/m]
+     +  PHYS_KD,        ! [Watt/m]
      +  TRI_NUM ! number or triangles in the final mesh
 
       real*8  DIM_L, DIM_D, DIM_Dw, DIM_Lw, DIM_Dd, DIM_Ld, DIM_Dr
-      real*8  PHYS_U0, PHYS_SIGMA, PHYS_RHO, PHYS_CV, PHYS_K
+      real*8  PHYS_U0, PHYS_SIGMA, PHYS_SIGMAD, PHYS_RHO, PHYS_CV,
+     +        PHYS_K, PHYS_KD
       integer TRI_NUM
 
 c === mesh data

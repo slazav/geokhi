@@ -185,7 +185,12 @@ C ======================================================================
       iSYS(1) = 1
       iSYS(2) = 1
 
-      Coef(1,1) = x * PHYS_K
+      if (labelT(iSYS(3)).eq.1) then
+        Coef(1,1) = PHYS_K * x
+      else
+        Coef(1,1) = PHYS_Kd * x
+      endif
+
       Ddiff_t = TENSOR_SCALAR
 
       Return

@@ -18,7 +18,7 @@ c begin adaptive iterative loop
          Write(*,'(/,A,I2)') '===> U LOOP: ', iLoop
          call solve_u
          call solve_q
-         If(iLoop.ne.nLOOPs) call adapt_mesh(Quality, SOL_Q)
+         If(iLoop.ne.nLOOPs) call adapt_mesh(Quality, SOL_U)
       End do
 
       call draw_q('res/sol_q.ps')

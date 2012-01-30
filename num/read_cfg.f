@@ -5,8 +5,8 @@ c === set default values
         DATA DIM_L/1.0/, DIM_D/1.0/, DIM_Lw/0.3/, DIM_Dw/0.5/,
      &       DIM_Ld/0.01/, DIM_Dd/0.02/,DIM_Dr/0.0/
         DATA PHYS_U0/1.0/,
-     &       PHYS_SIGMA/5D-8/, PHYS_RHO/1000D0/,
-     &       PHYS_CV/4200D0/, PHYS_K/0.61D0/
+     &       PHYS_SIGMA/5D-8/, PHYS_SIGMA/5D-14/, PHYS_RHO/1000D0/,
+     &       PHYS_CV/4200D0/, PHYS_K/0.61D0/, PHYS_KD/0.61D0/,
      &       TRI_NUM/8000/
 
         real*8 CFG_VAL
@@ -34,12 +34,16 @@ c === set default values
 
         elseif (CFG_KEY.EQ.'SIGMA') then
           PHYS_SIGMA=CFG_VAL
+        elseif (CFG_KEY.EQ.'SIGMAd') then
+          PHYS_SIGMAD=CFG_VAL
         elseif (CFG_KEY.EQ.'RHO') then
           PHYS_RHO=CFG_VAL
         elseif (CFG_KEY.EQ.'CV') then
           PHYS_CV=CFG_VAL
         elseif (CFG_KEY.EQ.'K') then
           PHYS_K=CFG_VAL
+        elseif (CFG_KEY.EQ.'Kd') then
+          PHYS_KD=CFG_VAL
 
         elseif (CFG_KEY.EQ.'TRI_NUM') then
           TRI_NUM=CFG_VAL

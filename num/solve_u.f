@@ -176,6 +176,7 @@ C ======================================================================
 C  Diffusion tensor             
 C ======================================================================
       Integer Function Ddiff_u(x, y, label, dDATA, iDATA, iSYS, Coef)
+      Include 'th.fh'
       include 'fem2Dtri.fd'
 
       Real*8  dDATA(*), x, y, Coef(MaxTensorSize, 4)
@@ -184,7 +185,12 @@ C ======================================================================
       iSYS(1) = 1
       iSYS(2) = 1
 
-      Coef(1,1) = x
+      if (labelT(iSYS(3)).eq.1) then
+        Coef(1,1) = PHYS_SIGMA * x
+      else
+        Coef(1,1) = PHYS_SIGMAd * x
+      endif
+
       Ddiff_u = TENSOR_SCALAR
 
       Return

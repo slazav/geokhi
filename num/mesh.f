@@ -85,8 +85,6 @@ C Generate a mesh
 
         Call draw_mesh('res/mesh0.ps', 'initial')
 
-
-
         labelB(1) = 5     ! center line
         labelB(2) = 4     ! cell walls
         labelB(4) = 4
@@ -103,6 +101,55 @@ C Generate a mesh
         crv(1,8) = dasin(1D0)/2D0
         crv(2,8) = dasin(1D0)
         labelC(8) = 1
+
+c       add
+
+        nv=nv+1
+        vrt(1,nv) = DIM_L/2.0D0
+        vrt(2,nv) = 0
+        labelV(nv) = 0
+
+        nb=nb+1
+        bnd(1,nb) = 6
+        bnd(2,nb) = nv
+        labelB(nb) = 11
+
+        nb=nb+1
+        bnd(1,nb) = nv
+        bnd(2,nb) = 10
+        labelB(nb) = 11
+
+
+        nt=nt+1
+        tri(1,nt) = 10
+        tri(2,nt) = 9
+        tri(3,nt) = 8
+        labelT(nt) = 2
+
+        nt=nt+1
+        tri(1,nt) = 10
+        tri(2,nt) = 8
+        tri(3,nt) = 7
+        labelT(nt) = 2
+
+        nt=nt+1
+        tri(1,nt) = 10
+        tri(2,nt) = 7
+        tri(3,nt) = 6
+        labelT(nt) = 2
+
+        nt=nt+1
+        tri(1,nt) = 10
+        tri(2,nt) = 6
+        tri(3,nt) = nv
+        labelT(nt) = 2
+
+        Call draw_mesh('res/mesh0a.ps', 'initial')
+      Call saveMani(nv, nvfix, vrt, labelV, fixedV,
+     &              nb, nbfix, bnd, labelB, fixedB,
+     &              nc,        crv, labelC,
+     &              nt, ntfix, tri, labelT, fixedT,
+     &     "res/mesh0a.ani")
 
 c Refine mesh
         call refine_mesh
