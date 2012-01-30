@@ -23,13 +23,6 @@ C ====== make initial mesh from cell dimensions
         DATA nvfix/0/, fixedV/0/,  nbfix/0/, ntfix/0/, nc/0/
 
         Write (*,*) 'Creating mesh.'
-        Write (*,*) 'Cell dimensions:'
-        Write (*,*) '  L = ', L
-        Write (*,*) '  D = ', D
-        Write (*,*) '  Lw = ', Lw
-        Write (*,*) '  Dw = ', Dw
-        Write (*,*) '  Ld = ', Ld
-        Write (*,*) '  Dd = ', Dd
 
         nbr=1
 
@@ -38,23 +31,23 @@ C ====== make initial mesh from cell dimensions
 
         nbr=nbr+1
         vbr(1,nbr) = 0D0
-        vbr(2,nbr) = (L-Lw)/2.0D0
+        vbr(2,nbr) = (DIM_L-DIM_Lw)/2.0D0
 
         nbr=nbr+1
-        vbr(1,nbr) = Dw/2.0D0
+        vbr(1,nbr) = DIM_Dw/2.0D0
         vbr(2,nbr) = vbr(2,2)
 
         nbr=nbr+1
         vbr(1,nbr) = vbr(1,3)
-        vbr(2,nbr) = L/2.0D0
+        vbr(2,nbr) = DIM_L/2.0D0
 
         nbr=nbr+1
-        vbr(1,nbr) = D/2.0D0
-        vbr(2,nbr) = L/2.0D0
+        vbr(1,nbr) = DIM_D/2.0D0
+        vbr(2,nbr) = DIM_L/2.0D0
 
         nbr=nbr+1
-        vbr(1,nbr) = D/2.0D0
-        vbr(2,nbr) = Ld/2.0D0
+        vbr(1,nbr) = DIM_D/2.0D0
+        vbr(2,nbr) = DIM_Ld/2.0D0
 
 
         nbr=nbr+1 
@@ -74,7 +67,7 @@ C ====== make initial mesh from cell dimensions
 
 
         nbr=nbr+1
-        vbr(1,nbr) = Dd/2.0D0
+        vbr(1,nbr) = DIM_Dd/2.0D0
         vbr(2,nbr) = 0D0
 
         nbr=nbr+1
@@ -129,8 +122,8 @@ C =====================================================================
         Real*8 tc, xyc(2)
         integer iFunc
 c       tc = 0..pi/2
-        xyc(1) = Dd/2D0 + Dr * (1D0 - dsin(tc))
-        xyc(2) = Ld/2D0 - Dr * (1D0 - dcos(tc))
+        xyc(1) = DIM_Dd/2D0 + DIM_Dr * (1D0 - dsin(tc))
+        xyc(2) = DIM_Ld/2D0 - DIM_Dr * (1D0 - dcos(tc))
       end
 
 C =====================================================================
@@ -144,15 +137,15 @@ C =====================================================================
         External crv_func
 
 c === generate adaptive mesh
-        control(1) = 500     !  MaxSkipE
-        control(2) = 50000   !  MaxQItr
+        nEStar  = 20        !  desired number of triangles (not used?)
+        control(1) = nEStar/10   !  MaxSkipE
+        control(2) = nEStar*10   !  MaxQItr
         control(3) = 1       !  status
         control(4) = 1       !  flagAuto
         control(5) = 0       !  iPrint:   average level of output information
         control(6) = 0       !  iErrMesgt: only critical termination allowed
 
-        Quality = 0.99D0      !  request shape-regular triangles in metric
-        nEStar  = INI_TRI_NUM !  desired number of triangles
+        Quality = 0.60D0     !  request shape-regular triangles in metric
 
 c      Call mbaAnalytic(
       call mbaFixShape(
@@ -224,7 +217,7 @@ c       Lp = 0             ! maximum norm
 
         Write(*,*) 'generate the adaptive mesh...'
 c === generate the adaptive mesh to u
-         nEStar = FIN_TRI_NUM
+         nEStar = TRI_NUM
          control(1) = nEStar/10  ! MaxSkipE
          control(2) = nEStar*10  ! MaxQItr
          control(3) = 32+1    ! status = forbid boundary triangles (see aniMBA/status.fd)

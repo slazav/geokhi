@@ -2,10 +2,12 @@ c ====== Read configuration file
       subroutine read_cfg()
         include 'th.fh'
 c === set default values
-        DATA L/1.0/, D/1.0/, Lw/0.3/, Dw/0.5/,
-     &       Ld/0.01/, Dd/0.02/,Dr/0.0/
-        DATA U0/1.0/,
-     &       INI_TRI_NUM/200/, FIN_TRI_NUM/8000/
+        DATA DIM_L/1.0/, DIM_D/1.0/, DIM_Lw/0.3/, DIM_Dw/0.5/,
+     &       DIM_Ld/0.01/, DIM_Dd/0.02/,DIM_Dr/0.0/
+        DATA PHYS_U0/1.0/,
+     &       PHYS_SIGMA/5D-8/, PHYS_RHO/1000D0/,
+     &       PHYS_CV/4200D0/, PHYS_K/0.61D0/
+     &       TRI_NUM/8000/
 
         real*8 CFG_VAL
         character*64 CFG_KEY
@@ -13,27 +15,34 @@ c === set default values
         open(54,FILE='cell.cfg')
  1101   read(54,*,END=1102) CFG_KEY, CFG_VAL
         if (CFG_KEY.EQ.'L') then
-          L=CFG_VAL
+          DIM_L=CFG_VAL
         elseif (CFG_KEY.EQ.'D') then
-          D=CFG_VAL
+          DIM_D=CFG_VAL
         elseif (CFG_KEY.EQ.'Lw') then
-          Lw=CFG_VAL
+          DIM_Lw=CFG_VAL
         elseif (CFG_KEY.EQ.'Dw') then
-          Dw=CFG_VAL
+          DIM_Dw=CFG_VAL
         elseif (CFG_KEY.EQ.'Ld') then
-          Ld=CFG_VAL
+          DIM_Ld=CFG_VAL
         elseif (CFG_KEY.EQ.'Dd') then
-          Dd=CFG_VAL
+          DIM_Dd=CFG_VAL
         elseif (CFG_KEY.EQ.'Dr') then
-          Dr=CFG_VAL
+          DIM_Dr=CFG_VAL
 
         elseif (CFG_KEY.EQ.'U0') then
-          U0=CFG_VAL
+          PHYS_U0=CFG_VAL
 
-        elseif (CFG_KEY.EQ.'INI_TRI_NUM') then
-          INI_TRI_NUM=CFG_VAL
-        elseif (CFG_KEY.EQ.'FIN_TRI_NUM') then
-          FIN_TRI_NUM=CFG_VAL
+        elseif (CFG_KEY.EQ.'SIGMA') then
+          PHYS_SIGMA=CFG_VAL
+        elseif (CFG_KEY.EQ.'RHO') then
+          PHYS_RHO=CFG_VAL
+        elseif (CFG_KEY.EQ.'CV') then
+          PHYS_CV=CFG_VAL
+        elseif (CFG_KEY.EQ.'K') then
+          PHYS_K=CFG_VAL
+
+        elseif (CFG_KEY.EQ.'TRI_NUM') then
+          TRI_NUM=CFG_VAL
 
         else
           write(*,'(A,A20)')

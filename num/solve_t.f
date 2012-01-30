@@ -176,6 +176,7 @@ C ======================================================================
 C  Diffusion tensor             
 C ======================================================================
       Integer Function Ddiff_t(x, y, label, dDATA, iDATA, iSYS, Coef)
+      Include 'th.fh'
       include 'fem2Dtri.fd'
 
       Real*8  dDATA(*), x, y, Coef(MaxTensorSize, 4)
@@ -184,7 +185,7 @@ C ======================================================================
       iSYS(1) = 1
       iSYS(2) = 1
 
-      Coef(1,1) = x
+      Coef(1,1) = x * PHYS_K
       Ddiff_t = TENSOR_SCALAR
 
       Return
@@ -256,8 +257,8 @@ c     interpolation code from aniMBA/lintrp2D.f
          ddd = 1D0
         End if
 
-        F(1,1) = (a * SOL_GU2(iv1) + b * SOL_GU2(iv2)
-     &                             + c * SOL_GU2(iv3)) / ddd
+        F(1,1) = (a * SOL_Q(iv1) + b * SOL_Q(iv2)
+     &                           + c * SOL_Q(iv3)) / ddd
 
         iSYS(1) = 1
         iSYS(2) = 1

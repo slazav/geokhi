@@ -3,17 +3,20 @@
 c === parameters read from configuration file
 
       common /CFG_DATA/
-     +  L, D,   ! cell dimensions
-     +  Dw, Lw, ! window dimensions
-     +  Dd, Ld, ! diaphragm dimensions
-     +  Dr,     ! diaphragm edge /may by 0/
-     +  U0,     ! voltage, V
-     +  INI_TRI_NUM, ! number or triangles in initial mesh refining
-     +  FIN_TRI_NUM  ! number or triangles in the final mesh
+     +  DIM_L, DIM_D,   ! cell dimensions
+     +  DIM_Dw, DIM_Lw, ! window dimensions
+     +  DIM_Dd, DIM_Ld, ! diaphragm dimensions
+     +  DIM_Dr,         ! diaphragm edge /may by 0/
+     +  PHYS_U0,        ! voltage [V]
+     +  PHYS_SIGMA,     ! [1/Ohm/m]
+     +  PHYS_RHO,       ! [kg/m^3]
+     +  PHYS_CV,        ! [J/kg/K]
+     +  PHYS_K,         ! [Watt/m]
+     +  TRI_NUM ! number or triangles in the final mesh
 
-      real*8  L, D, Dw, Lw, Dd, Ld, Dr
-      real*8  U0
-      integer INI_TRI_NUM, FIN_TRI_NUM
+      real*8  DIM_L, DIM_D, DIM_Dw, DIM_Lw, DIM_Dd, DIM_Ld, DIM_Dr
+      real*8  PHYS_U0, PHYS_SIGMA, PHYS_RHO, PHYS_CV, PHYS_K
+      integer TRI_NUM
 
 c === mesh data
 
@@ -42,12 +45,11 @@ c namax - maximum number of non-zero matrix entries
 
 c === solutions
       common /SOL_DATA/ ! solutions data
-     +   SOL_U, SOL_GU2, SOL_T
+     +   SOL_U, SOL_Q, SOL_T
 
       double precision   SOL_U(nfmax)
       double precision   SOL_T(nfmax)
-      double precision   SOL_GUx(nfmax),SOL_GUy(nfmax), SOL_GU2(nfmax)
-
+      double precision   SOL_Q(nfmax)
 
 c === work memory
       Integer   MaxWr, MaxWi

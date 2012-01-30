@@ -17,36 +17,17 @@ c begin adaptive iterative loop
       Do iLoop = 1, nLOOPs
          Write(*,'(/,A,I2)') '===> U LOOP: ', iLoop
          call solve_u
-         call calc_gu2
-         If(iLoop.ne.nLOOPs) call adapt_mesh(Quality, SOL_GU2)
+         call solve_q
+         If(iLoop.ne.nLOOPs) call adapt_mesh(Quality, SOL_Q)
       End do
 
-      call draw_gu2('res/sol_gu2.ps')
+      call draw_q('res/sol_q.ps')
       Call draw_u('res/sol_u.ps')
       Call draw_mesh('res/mesh_u.ps', 'final')
 
 
-      call write_line(0D0,0D0, 0D0,0.005D0,
-     &   500,SOL_U, 'res/sol_u_1.dat')
-      call write_line(Dd*0.25,Dd*0.25, 0D0,0.005D0,
-     &   500,SOL_U, 'res/sol_u_2.dat')
-      call write_line(Dd*0.40,Dd*0.40, 0D0,0.005D0,
-     &   500,SOL_U, 'res/sol_u_3.dat')
-      call write_line(Dd*0.48,Dd*0.48, 0D0,0.005D0,
-     &   500,SOL_U, 'res/sol_u_4.dat')
-      call write_line(Dd*0.50,Dd*0.50, 0D0,0.005D0,
-     &   500,SOL_U, 'res/sol_u_5.dat')
-
-      call write_line(0D0,0D0, 0D0,0.003D0,
-     &   500,SOL_GU2, 'res/sol_gu_1.dat')
-      call write_line(Dd*0.25,Dd*0.25, 0D0,0.003D0,
-     &   500,SOL_GU2, 'res/sol_gu_2.dat')
-      call write_line(Dd*0.40,Dd*0.40, 0D0,0.003D0,
-     &   500,SOL_GU2, 'res/sol_gu_3.dat')
-      call write_line(Dd*0.48,Dd*0.48, 0D0,0.003D0,
-     &   500,SOL_GU2, 'res/sol_gu_4.dat')
-      call write_line(Dd*0.50,Dd*0.50, 0D0,0.003D0,
-     &   500,SOL_GU2, 'res/sol_gu_5.dat')
+      call write_lines(SOL_U, 'u')
+      call write_lines(SOL_Q, 'q')
 
 c === testing the results
       If(Quality.LT.0.5) write (*,*) '!!! low mesh quality ', Quality
@@ -56,16 +37,7 @@ c === testing the results
       call solve_t
       Call draw_t('res/sol_t.ps')
 
-      call write_line(0D0,0D0, 0D0,0.005D0,
-     &   500,SOL_T, 'res/sol_t_1.dat')
-      call write_line(Dd*0.25,Dd*0.25, 0D0,0.005D0,
-     &   500,SOL_T, 'res/sol_t_2.dat')
-      call write_line(Dd*0.40,Dd*0.40, 0D0,0.005D0,
-     &   500,SOL_T, 'res/sol_t_3.dat')
-      call write_line(Dd*0.48,Dd*0.48, 0D0,0.005D0,
-     &   500,SOL_T, 'res/sol_t_4.dat')
-      call write_line(Dd*0.50,Dd*0.50, 0D0,0.005D0,
-     &   500,SOL_T, 'res/sol_t_5.dat')
+      call write_lines(SOL_T, 't')
 
 
       Stop
@@ -96,3 +68,26 @@ c === testing the results
       end
 
 
+      subroutine write_lines(u,par)
+        include 'th.fh'
+        real*8 x(5),y1,y2
+        double precision u(*)
+        character*(64) filename
+        character*(*) par
+
+        integer i, np
+
+        x(1)=0D0
+        x(2)=DIM_Dd*0.25
+        x(3)=DIM_Dd*0.40
+        x(4)=DIM_Dd*0.48
+        x(5)=DIM_Dd*0.50
+        y1=0D0
+        y2=0.005D0
+        np=500
+
+        do i=i,5
+          write(filename,'(A,A,I1,A)') 'res/sol_', par, i,'.dat'
+          call write_line(x(i),x(i),y1,y2, np, u, filename)
+        enddo
+      end

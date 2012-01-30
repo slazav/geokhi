@@ -210,7 +210,7 @@ C ======================================================================
          eBC(1,1) = 0D0
       Else If (label.EQ.3) Then
          Dbc_u = BC_DIRICHLET
-         eBC(1,1) = U0/2.0D0
+         eBC(1,1) = PHYS_U0/2.0D0
       Else
          Dbc_u = BC_NEUMANN
          eBC(1,1) = 0D0

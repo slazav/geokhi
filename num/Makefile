@@ -9,7 +9,7 @@ LIBS	= -L $(ANILIB) $(LIBAFT) $(LIBFEM) $(LIBLU) $(LIBLMR) $(LIBMBA) \
 ############################################################
 all: main
 
-OBJ  =  main.o solve_u.o solve_t.o mesh.o read_cfg.o gradU.o
+OBJ  =  main.o solve_u.o solve_t.o solve_q.o mesh.o read_cfg.o
 
 
 ############################################################
@@ -28,3 +28,6 @@ $(OBJ): th.fh
 	@echo '$(CC)  -c $(CFLAGS) ' $*.c 
 	@$(CC)  $(CFLAGS) -c $*.c -o $*.o
 
+clean:
+	make -C res clean
+	rm -f *.o main

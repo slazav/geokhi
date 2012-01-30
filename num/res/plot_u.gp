@@ -17,11 +17,11 @@ pause -1
 #set output "u2.fig"
 
 plot [0:0.003] []\
-  'sol_gu_1.dat' using 2:3 with lines lc 3,\
-  'sol_gu_2.dat' using 2:3 with lines lc 3,\
-  'sol_gu_3.dat' using 2:3 with lines lc 3,\
-  'sol_gu_4.dat' using 2:3 with lines lc 3,\
-  'sol_gu_5.dat' using 2:3 with lines lc 3,\
+  'sol_q_1.dat' using 2:3 with lines lc 3,\
+  'sol_q_2.dat' using 2:3 with lines lc 3,\
+  'sol_q_3.dat' using 2:3 with lines lc 3,\
+  'sol_q_4.dat' using 2:3 with lines lc 3,\
+  'sol_q_5.dat' using 2:3 with lines lc 3,\
 0
 pause -1
 
