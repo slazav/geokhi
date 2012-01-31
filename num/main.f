@@ -26,8 +26,8 @@ c begin adaptive iterative loop
       Call draw_mesh('res/mesh_u.ps', 'final')
 
 
-      call write_lines(SOL_U, 'u')
-      call write_lines(SOL_Q, 'q')
+      call write_zlines(SOL_U, 'u')
+      call write_zlines(SOL_Q, 'q')
 
 c === testing the results
       If(Quality.LT.0.5) write (*,*) '!!! low mesh quality ', Quality
@@ -37,7 +37,8 @@ c === testing the results
       call solve_t
       Call draw_t('res/sol_t.ps')
 
-      call write_lines(SOL_T, 't')
+      call write_zlines(SOL_T, 't')
+      call write_rlines(SOL_T, 't')
 
 
       Stop
@@ -68,7 +69,7 @@ c === testing the results
       end
 
 
-      subroutine write_lines(u,par)
+      subroutine write_zlines(u,par)
         include 'th.fh'
         real*8 x(5),y1,y2
         double precision u(*)
@@ -87,7 +88,31 @@ c === testing the results
         np=500
 
         do i=1,5
-          write(filename,'(A,A,I1,A)') 'res/sol_', par, i,'.dat'
+          write(filename,'(A,A,I1,A)') 'res/solz_', par, i,'.dat'
           call write_line(x(i),x(i),y1,y2, np, u, filename)
+        enddo
+      end
+
+      subroutine write_rlines(u,par)
+        include 'th.fh'
+        real*8 y(5),x1,x2
+        double precision u(*)
+        character*(64) filename
+        character*(*) par
+
+        integer i, np
+
+        y(1)=0D0
+        y(2)=0.0005D0
+        y(3)=0.001D0
+        y(4)=0.002D0
+        y(5)=0.004D0
+        x1=0D0
+        x2=0.002D0
+        np=500
+
+        do i=1,5
+          write(filename,'(A,A,I1,A)') 'res/solr_', par, i,'.dat'
+          call write_line(x1,x2,y(i),y(i), np, u, filename)
         enddo
       end
