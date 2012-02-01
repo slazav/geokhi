@@ -6,8 +6,7 @@ C =====================================================================
         Write(*,*) '   Writing ', desc,' mesh into ', filename
         Write(*,*) nt, ' triangles and ', nv, 'vertices.'
         Write(*,*) nc, ' curves ', nb, 'boundary edges'
-        call graph_demo(nv,vrt, nt,tri, filename, '')
-c        call graph(nv,vrt, nt,tri, filename)
+        call graph(nv,vrt, nt,tri, filename)
         return
       end
 
@@ -83,8 +82,6 @@ C Generate a mesh
      &           nb, bnd, labelB)
         If (iERR.ne.0) stop ' error in function aft2dfront'
 
-        Call draw_mesh('res/mesh0.ps', 'initial')
-
         labelB(1) = 5     ! center line
         labelB(2) = 4     ! cell walls
         labelB(4) = 4
@@ -143,17 +140,6 @@ c       add
         tri(2,nt) = 6
         tri(3,nt) = nv
         labelT(nt) = 2
-
-        Call draw_mesh('res/mesh0a.ps', 'initial')
-      Call saveMani(nv, nvfix, vrt, labelV, fixedV,
-     &              nb, nbfix, bnd, labelB, fixedB,
-     &              nc,        crv, labelC,
-     &              nt, ntfix, tri, labelT, fixedT,
-     &     "res/mesh0a.ani")
-
-c Refine mesh
-        call refine_mesh
-        call draw_mesh('res/mesh1.ps', 'refined')
 
         return
 

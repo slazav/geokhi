@@ -2,8 +2,7 @@ C ======================================================================
       Subroutine draw_Q(filename)
         include 'th.fh'
         character*(*) filename
-        Call isolines_demo(SOL_Q, nv,vrt, nt,tri, nb,bnd,
-     &         filename, 50, '')
+        Call isolines(SOL_Q, nv,vrt, nt,tri, nb,bnd, filename, 50)
       End
 
 C ======================================================================

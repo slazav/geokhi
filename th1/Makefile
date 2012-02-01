@@ -13,6 +13,7 @@ theor.dvi: theor.tex images/*.fig
 
 clean:
 	rm -f *.aux *.log *.bbl *.blg *.dvi *.ps *.pdf *.toc *.ind *.ilg
+	make -C images clean
 distclean: clean
 	rm -f *.pdf
 

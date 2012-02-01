@@ -1,8 +1,7 @@
       Subroutine draw_t(filename)
         include 'th.fh'
         character*(*) filename
-        Call isolines_demo(SOL_T, nv,vrt, nt,tri, nb,bnd,
-     &         filename, 50, '')
+        Call isolines(SOL_T, nv,vrt, nt,tri, nb,bnd, filename, 50)
       end
 
       Subroutine solve_t
@@ -213,6 +212,9 @@ c      Include 'th.fh'
 
       If (label.eq.4.or.label.eq.3) Then
          Dbc_t = BC_DIRICHLET
+         eBC(1,1) = 0D0
+      Else If (label.EQ.1) Then
+         Dbc_u = BC_NULL
          eBC(1,1) = 0D0
       Else
          Dbc_t = BC_NEUMANN

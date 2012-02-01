@@ -9,6 +9,13 @@ LIBS	= -L $(ANILIB) $(LIBAFT) $(LIBFEM) $(LIBLU) $(LIBLMR) $(LIBMBA) \
 ############################################################
 all: main
 
+run: main
+	./main
+	make -C png
+
+runi: run
+	make -C png
+
 OBJ  =  main.o solve_u.o solve_t.o solve_q.o mesh.o read_cfg.o
 
 
@@ -22,11 +29,9 @@ $(OBJ): th.fh
 
 ############################################################
 .f.o:
-	@echo '$(F77) -c $(FFLAGS) ' $*.f 
-	@$(F77) $(FFLAGS) -c $*.f -o $*.o $(INCLUDE)
+	$(F77) $(FFLAGS) -c $*.f -o $*.o $(INCLUDE)
 .c.o:
-	@echo '$(CC)  -c $(CFLAGS) ' $*.c 
-	@$(CC)  $(CFLAGS) -c $*.c -o $*.o
+	$(CC)  $(CFLAGS) -c $*.c -o $*.o
 
 clean:
 	make -C res clean
