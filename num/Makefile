@@ -11,12 +11,11 @@ all: main
 
 run: main
 	./main
-	make -C png
 
 runi: run
 	make -C png
 
-OBJ  =  main.o solve_u.o solve_t.o solve_q.o mesh.o read_cfg.o
+OBJ  =  main.o solve_u.o solve_t.o solve_q.o solve_n.o mesh.o read_cfg.o
 
 
 ############################################################
@@ -34,5 +33,5 @@ $(OBJ): th.fh
 	$(CC)  $(CFLAGS) -c $*.c -o $*.o
 
 clean:
-	make -C res clean
+	make -C ps clean
 	rm -f *.o main

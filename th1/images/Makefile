@@ -1,4 +1,5 @@
-pics=cell cell_q mesh1 mesh2 mesh3 sol_u sol_q sol_t graph_u1 graph_u2
+pics=cell cell_q mesh1 mesh2 mesh3 sol_u sol_q sol_t\
+     plot_t1 plot_t2
 
 #all: ${pics:=.png} ${pics:=.tex} ${pics:=.eps}
 all: ${pics:=.tex} ${pics:=.eps}

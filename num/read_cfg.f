@@ -7,6 +7,7 @@ c === set default values
         DATA PHYS_U0/1.0/,
      &       PHYS_SIGMA/5D-8/, PHYS_SIGMA/5D-14/, PHYS_RHO/1000D0/,
      &       PHYS_CV/4200D0/, PHYS_K/0.61D0/, PHYS_KD/0.61D0/,
+     &       PHYS_N0/1.0D0/, PHYS_DNDT/-1.0D0/
      &       TRI_NUM/8000/
 
         real*8 CFG_VAL
@@ -44,6 +45,10 @@ c === set default values
           PHYS_K=CFG_VAL
         elseif (CFG_KEY.EQ.'Kd') then
           PHYS_KD=CFG_VAL
+        elseif (CFG_KEY.EQ.'N0') then
+          PHYS_N0=CFG_VAL
+        elseif (CFG_KEY.EQ.'DNDT') then
+          PHYS_DNDT=CFG_VAL
 
         elseif (CFG_KEY.EQ.'TRI_NUM') then
           TRI_NUM=CFG_VAL

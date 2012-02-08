@@ -34,12 +34,13 @@ plot [0:0.003] []\
 0
 pause -1
 
-plot \
-  'solr_t1.dat' using 1:3 with lines lc 3,\
-  'solr_t2.dat' using 1:3 with lines lc 3,\
-  'solr_t3.dat' using 1:3 with lines lc 3,\
-  'solr_t4.dat' using 1:3 with lines lc 3,\
-  'solr_t5.dat' using 1:3 with lines lc 3,\
-0
+plot [0:0.003] []\
+  'solz_n1.dat' using 2:3 with lines lc 3,\
+  'solz_n2.dat' using 2:3 with lines lc 3,\
+  'solz_n3.dat' using 2:3 with lines lc 3,\
+  'solz_n4.dat' using 2:3 with lines lc 3,\
+  'solz_n5.dat' using 2:3 with lines lc 3,\
+1
 pause -1
+
 

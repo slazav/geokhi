@@ -14,11 +14,13 @@ c === parameters read from configuration file
      +  PHYS_CV,        ! [J/kg/K]
      +  PHYS_K,         ! [Watt/m]
      +  PHYS_KD,        ! [Watt/m]
+     +  PHYS_N0,        !
+     +  PHYS_DNDT,      !
      +  TRI_NUM ! number or triangles in the final mesh
 
       real*8  DIM_L, DIM_D, DIM_Dw, DIM_Lw, DIM_Dd, DIM_Ld, DIM_Dr
       real*8  PHYS_U0, PHYS_SIGMA, PHYS_SIGMAD, PHYS_RHO, PHYS_CV,
-     +        PHYS_K, PHYS_KD
+     +        PHYS_K, PHYS_KD, PHYS_N0, PHYS_DNDT
       integer TRI_NUM
 
 c === mesh data
@@ -48,11 +50,12 @@ c namax - maximum number of non-zero matrix entries
 
 c === solutions
       common /SOL_DATA/ ! solutions data
-     +   SOL_U, SOL_Q, SOL_T
+     +   SOL_U, SOL_Q, SOL_T, SOL_N
 
       double precision   SOL_U(nfmax)
-      double precision   SOL_T(nfmax)
       double precision   SOL_Q(nfmax)
+      double precision   SOL_T(nfmax)
+      double precision   SOL_N(nfmax)
 
 c === work memory
       Integer   MaxWr, MaxWi
