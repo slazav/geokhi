@@ -31,6 +31,8 @@ c Local variables
 
 C ======================================================================
 
+        Write(*,*) 'finding Q'
+
         Do n = 1, nt
           do i=1,2
             xy1(i)=vrt(i,tri(1,n))
@@ -87,6 +89,8 @@ c           find tri center
             SOL_Q(n) = 0
           endif
         enddo
+
+        call draw_q('ps/sol_q.ps')
 
         Return
       End

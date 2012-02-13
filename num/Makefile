@@ -15,7 +15,8 @@ run: main
 runi: run
 	make -C png
 
-OBJ  =  main.o solve_u.o solve_t.o solve_q.o solve_n.o mesh.o read_cfg.o
+OBJ  =  main.o solve_u.o solve_t.o solve_q.o solve_n.o solve_abcd.o\
+         mesh.o read_cfg.o
 
 
 ############################################################

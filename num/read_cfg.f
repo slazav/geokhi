@@ -3,7 +3,7 @@ c ====== Read configuration file
         include 'th.fh'
 c === set default values
         DATA DIM_L/1.0/, DIM_D/1.0/, DIM_Lw/0.3/, DIM_Dw/0.5/,
-     &       DIM_Ld/0.01/, DIM_Dd/0.02/,DIM_Dr/0.0/
+     &       DIM_Ld/0.01/, DIM_Dd/0.02/, DIM_Dr/0.0/, DIM_Ln/1.0/
         DATA PHYS_U0/1.0/,
      &       PHYS_SIGMA/5D-8/, PHYS_SIGMA/5D-14/, PHYS_RHO/1000D0/,
      &       PHYS_CV/4200D0/, PHYS_K/0.61D0/, PHYS_KD/0.61D0/,
@@ -29,6 +29,8 @@ c === set default values
           DIM_Dd=CFG_VAL
         elseif (CFG_KEY.EQ.'Dr') then
           DIM_Dr=CFG_VAL
+        elseif (CFG_KEY.EQ.'Ln') then
+          DIM_Ln=CFG_VAL
 
         elseif (CFG_KEY.EQ.'U0') then
           PHYS_U0=CFG_VAL

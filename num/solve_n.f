@@ -26,10 +26,14 @@ c Local variables
 
 C ======================================================================
 
+        Write(*,*) 'finding N'
+
         Do n = 1, nv
-            SOL_N(n) = PHYS_N0 + SOL_T(n)*PHYS_DNDT
+c            SOL_N(n) = PHYS_N0 + SOL_T(n)*PHYS_DNDT
+            SOL_N(n) = SOL_T(n)*PHYS_DNDT
         enddo
 
+        call draw_n('ps/sol_n.ps')
         Return
       End
 

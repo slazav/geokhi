@@ -40,7 +40,7 @@ plot [0:0.003] []\
   'solz_n3.dat' using 2:3 with lines lc 3,\
   'solz_n4.dat' using 2:3 with lines lc 3,\
   'solz_n5.dat' using 2:3 with lines lc 3,\
-1
+0
 pause -1
 
 

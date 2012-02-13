@@ -4,6 +4,7 @@
         Call isolines(SOL_U, nv,vrt, nt,tri, nb,bnd, filename, 50)
       end
 
+C ======================================================================
       Subroutine solve_u
         include 'th.fh'
         include 'fem2Dtri.fd'
@@ -24,6 +25,7 @@
         Integer  i, nRow, nCol
         Real*8   rmax, h, x, y, eBC(2)
 
+        Write(*,*) 'finding U'
 
 c === no data is provided for the user subroutine Ddiff
         dDATAFEM(1) = 0D0
@@ -91,6 +93,7 @@ c error messages
  5003   Continue
         Write(*,*) 'Error occurred in umf4sol: ', luinfo(1)
         Stop 911
+
 
       end
 

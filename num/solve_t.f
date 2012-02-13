@@ -4,6 +4,7 @@
         Call isolines(SOL_T, nv,vrt, nt,tri, nb,bnd, filename, 50)
       end
 
+C ======================================================================
       Subroutine solve_t
         include 'th.fh'
         include 'fem2Dtri.fd'
@@ -24,6 +25,8 @@
         Integer  i, nRow, nCol
         Real*8   rmax, h, x, y, eBC(2)
 
+
+        Write(*,*) 'finding T'
 
 c === no data is provided for the user subroutine Ddiff
         dDATAFEM(1) = 0D0
@@ -78,6 +81,8 @@ c check the residual
         End do
         Write(*,'(A,E12.6)') 'LU:  maximal norm of residual: ', rmax
 
+        call draw_t('ps/sol_t.ps')
+
          return
 c error messages
  5001   Continue
@@ -93,7 +98,6 @@ c error messages
         Stop 911
 
       end
-
 
 C ======================================================================
       Subroutine FEM2Dext_t(XY1, XY2, XY3, 
