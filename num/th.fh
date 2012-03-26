@@ -7,7 +7,8 @@ c === parameters read from configuration file
      +  DIM_Dw, DIM_Lw, ! window dimensions
      +  DIM_Dd, DIM_Ld, ! diaphragm dimensions
      +  DIM_Dr,         ! diaphragm edge /may by 0/
-     +  DIM_Ln,         ! detector distance
+     +  DIM_Li,         ! laser distance
+     +  DIM_Lo,         ! detector distance
      +  PHYS_U0,        ! voltage [V]
      +  PHYS_SIGMA,     ! [1/Ohm/m]
      +  PHYS_SIGMAD,    ! [1/Ohm/m]
@@ -20,7 +21,7 @@ c === parameters read from configuration file
      +  TRI_NUM ! number or triangles in the final mesh
 
       real*8  DIM_L, DIM_D, DIM_Dw, DIM_Lw, DIM_Dd, DIM_Ld, DIM_Dr,
-     +        DIM_Ln
+     +        DIM_Li, DIM_Lo
       real*8  PHYS_U0, PHYS_SIGMA, PHYS_SIGMAD, PHYS_RHO, PHYS_CV,
      +        PHYS_K, PHYS_KD, PHYS_N0, PHYS_DNDT
       integer TRI_NUM

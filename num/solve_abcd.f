@@ -23,7 +23,7 @@ C ======================================================================
         write (57,*) '## z N0 A0 ERR'
 
         AA=1D0
-        BB=0D0
+        BB=DIM_Li
         CC=0D0
         DD=1D0
 
@@ -49,11 +49,12 @@ c         we have PHYS_N0 + N0 - A0 r^2
         enddo
         close(57)
 
+        write(*,*) '>>>',AA,BB,CC,DD
 
 
         open (57, FILE='dat/fit_abcd.dat')
         write(57,*) AA,BB,CC,DD
-        call mmul(1, DIM_Ln, 0, 1,  AA, BB, CC, DD)
+        call mmul(1, DIM_Lo, 0, 1,  AA, BB, CC, DD)
         write(57,*) AA,BB,CC,DD
         close(57)
         Return
