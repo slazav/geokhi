@@ -30,7 +30,7 @@ C ====== make initial mesh from cell dimensions
 
         nbr=nbr+1
         vbr(1,nbr) = 0D0
-        vbr(2,nbr) = (DIM_L-DIM_Lw)/2.0D0
+        vbr(2,nbr) = (DIM_L - 2D0*DIM_Lw)/2.0D0
 
         nbr=nbr+1
         vbr(1,nbr) = DIM_Dw/2.0D0

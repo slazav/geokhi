@@ -9,6 +9,9 @@ c === parameters read from configuration file
      +  DIM_Dr,         ! diaphragm edge /may by 0/
      +  DIM_Li,         ! laser distance
      +  DIM_Lo,         ! detector distance
+     +  RAY_L,          ! wavelength
+     +  RAY_W0,         ! beam radius
+
      +  PHYS_U0,        ! voltage [V]
      +  PHYS_SIGMA,     ! [1/Ohm/m]
      +  PHYS_SIGMAD,    ! [1/Ohm/m]
@@ -21,7 +24,7 @@ c === parameters read from configuration file
      +  TRI_NUM ! number or triangles in the final mesh
 
       real*8  DIM_L, DIM_D, DIM_Dw, DIM_Lw, DIM_Dd, DIM_Ld, DIM_Dr,
-     +        DIM_Li, DIM_Lo
+     +        DIM_Li, DIM_Lo, RAY_L, RAY_W0
       real*8  PHYS_U0, PHYS_SIGMA, PHYS_SIGMAD, PHYS_RHO, PHYS_CV,
      +        PHYS_K, PHYS_KD, PHYS_N0, PHYS_DNDT
       integer TRI_NUM
@@ -53,13 +56,13 @@ c namax - maximum number of non-zero matrix entries
 
 c === solutions
       common /SOL_DATA/ ! solutions data
-     +   SOL_U, SOL_Q, SOL_T, SOL_N
+     +   SOL_U, SOL_Q, SOL_T, SOL_N, SUM_Q, SUM_R, SUM_V, SUM_S
 
       double precision   SOL_U(nfmax)
       double precision   SOL_Q(nfmax)
       double precision   SOL_T(nfmax)
       double precision   SOL_N(nfmax)
-
+      double precision   SUM_Q, SUM_R, SUM_V, SUM_S
 c === work memory
       Integer   MaxWr, MaxWi
       Parameter(MaxWr = 4 000 000, MaxWi = 6 000 000)
@@ -68,3 +71,7 @@ c === work memory
       Real*8   rW(MaxWr)
       Real     ANI_CrvFunction
 
+c === constants
+
+      Real*8 PI
+      Parameter(PI = 3.1415926)

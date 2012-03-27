@@ -36,11 +36,22 @@ c === testing the results
       call solve_t
       call write_zlines(SOL_T, 't')
 
-
       call solve_n
       call write_zlines(SOL_N, 'n')
 
+      write(*,*) 'Vol = ', 2D0  * SUM_V * 1D6 , ' cm^3'
+      write(*,*) 'Area = ', 4D0 * SUM_S * 1D4 , ' cm^2'
+      write(*,*) 'R = ', SUM_R/1D6, ' MOhm'
+      write(*,*) 'U = ', 2*PHYS_U0, ' V'
+      write(*,*) 'I = ', 2*PHYS_U0/SUM_R * 1D6, ' uA'
+
+      write(*,*) 'Qsum  = ', SUM_Q*1D6, ' uW'
+      write(*,*) 'Qmax  = ', SOL_Q(1)*1D-3, ' uW/mm^3'
+      write(*,*) 'dTmax = ', SOL_T(1), ' K'
+      write(*,*) 'dNmax = ', -SOL_N(1), ''
+
       call solve_abcd(DIM_Dd * 0.2D0, 500,1000)
+
 
 c      Write(*,'(/,A,I2)') 'dump fit'
 c      call fit_all(DIM_Dd/2.0D0 * 0.2D0, 4d-3, 500,500, 'dat/fit02.dat')

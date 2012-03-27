@@ -5,6 +5,7 @@ c === set default values
         DATA DIM_L/1.0/, DIM_D/1.0/, DIM_Lw/0.3/, DIM_Dw/0.5/,
      &       DIM_Ld/0.01/, DIM_Dd/0.02/, DIM_Dr/0.0/,
      &       DIM_Li/1.0/, DIM_Lo/1.0/
+        DATA RAY_L/600D-9/, RAY_W0/0.5D-3/
         DATA PHYS_U0/1.0/,
      &       PHYS_SIGMA/5D-8/, PHYS_SIGMA/5D-14/, PHYS_RHO/1000D0/,
      &       PHYS_CV/4200D0/, PHYS_K/0.61D0/, PHYS_KD/0.61D0/,
@@ -34,6 +35,11 @@ c === set default values
           DIM_Li=CFG_VAL
         elseif (CFG_KEY.EQ.'Lo') then
           DIM_Lo=CFG_VAL
+
+        elseif (CFG_KEY.EQ.'RAY_L') then
+          RAY_L=CFG_VAL
+        elseif (CFG_KEY.EQ.'RAY_W0') then
+          RAY_W0=CFG_VAL
 
         elseif (CFG_KEY.EQ.'U0') then
           PHYS_U0=CFG_VAL

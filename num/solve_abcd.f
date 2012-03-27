@@ -18,6 +18,7 @@ C ======================================================================
         real*8 mx,y, N0, A0, E
         real*8 N, A2,  dy
         real*8 AA,BB,CC,DD
+        complex*16 Qi, Qo
 
         open (57, FILE='dat/fit_n.dat')
         write (57,*) '## z N0 A0 ERR'
@@ -27,12 +28,9 @@ C ======================================================================
         CC=0D0
         DD=1D0
 
-        write(*,*) '>>>',AA,BB,CC,DD
-          call mmul(1D0,0D0,0D0,1D0,  AA, BB, CC, DD)
-        write(*,*) '>>>',AA,BB,CC,DD
-
         do i= -ny, ny
-          y=dabs((DIM_L - DIM_Lw) *i)/ny/2.0
+          dy = (DIM_L - 2*DIM_Lw)/ny/2.0
+          y=dabs((DIM_L - 2*DIM_Lw) *i)/ny/2.0
           call fit_line(mx, y, nx, SOL_N,  N0, A0, E)
 
 c         we need N(1 + A2 r^2/2)
@@ -42,21 +40,52 @@ c         we have PHYS_N0 + N0 - A0 r^2
 
           write (57,*) y*i/abs(i), N, A2, E
 
-          dy = (DIM_L - DIM_Lw)/ny/2.0
 
           call mmul(1D0 + A2 * dy**2, dy/N, N * A2 * dy, 1D0,
      c              AA, BB, CC, DD)
         enddo
         close(57)
 
-        write(*,*) '>>>',AA,BB,CC,DD
+        call mmul(1D0, DIM_Lo, 0D0, 1D0,  AA, BB, CC, DD)
+
+C        write(*,*) '>>>',AA,BB,CC,DD
+        Qi=1D0/CMPLX(0D0, RAY_L/PI/RAY_W0**2)
+        Qo=(AA*Qi+BB)/(CC*Qi+DD)
+
 
 
         open (57, FILE='dat/fit_abcd.dat')
         write(57,*) AA,BB,CC,DD
-        call mmul(1, DIM_Lo, 0, 1,  AA, BB, CC, DD)
+
+        write(*,*) 'R= ', 1D0/REAL(1D0/Qo), ' m'
+        write(*,*) 'W= ', DSQRT(1D0/AIMAG(1D0/Qo) * RAY_L / PI)
+     &    * 1000, ' mm'
+
+
         write(57,*) AA,BB,CC,DD
         close(57)
+
+        AA=1D0
+        BB=DIM_Li
+        CC=0D0
+        DD=1D0
+        call mmul(1D0, (DIM_L - 2D0 * DIM_Lw)/PHYS_N0,
+     &                  0D0, 1D0,  AA, BB, CC, DD)
+        call mmul(1D0, DIM_Lo, 0D0, 1D0,  AA, BB, CC, DD)
+
+c        write(*,*) '>>>',AA,BB,CC,DD
+
+c        write(*,*) 'Q>>>', Qi, ' ', Qo
+
+        Qi=1D0/CMPLX(0D0, RAY_L/PI/RAY_W0**2)
+        Qo=(AA*Qi+BB)/(CC*Qi+DD)
+
+c        write(*,*) 'Q>>>', Qi, ' ', Qo
+
+        write(*,*) 'R0= ', 1D0/REAL(1D0/Qo), 'm'
+        write(*,*) 'W0= ', DSQRT(1D0/AIMAG(1D0/Qo) * RAY_L / PI)
+     &    * 1000D0, ' mm'
+
         Return
       End
 
